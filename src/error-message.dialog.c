@@ -1,9 +1,21 @@
 #define _GNU_SOURCE
 #include <gtk/gtk.h>
+#include <stdbool.h>
+#include "app.h"
+
+static bool is_gtk_initialized = false;
+
+void lazy_init_gtk(){
+    if(!is_gtk_initialized){
+        Application app = app_get();
+          gtk_init(&app.argc, &app.argv);
+        is_gtk_initialized = true;
+    }
+}
 
 void show_error_message(const char * const text){
 
-
+    lazy_init_gtk();
 	GtkWidget * dialog = gtk_message_dialog_new (NULL,
                                  0,
                                  GTK_MESSAGE_ERROR,
@@ -17,6 +29,8 @@ void show_error_message(const char * const text){
 }
 
 void show_error_message_format(const char * const format, ...){
+    lazy_init_gtk();
+
   	char * result;
   	va_list arglist;
 	va_start( arglist, format );

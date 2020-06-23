@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdbool.h>
-#include <gtk/gtk.h>
 #include "polkit-auth-handler.service.h"
 #include "cmdline.h"
 #include "logger.h"
@@ -12,6 +11,8 @@ static bool runInParallel;
 static bool runInSilence;
 static bool runInVerbose;
 static char *cmd_line = NULL;
+static int static_argc;
+static char ** static_argv;
 
 
 const char*  app__get_cmd_line(){
@@ -23,13 +24,22 @@ AuthHandlingMode app__get_auth_handling_mode(){
 }
 
 
-
+Application app_get(){
+  return (Application){
+      .argc = static_argc ,
+      .argv = static_argv ,
+      .command_line = cmd_line ,
+      .handling_mode = runInParallel ? AuthHandlingMode_PARALLEL : AuthHandlingMode_SERIE
+  };
+}
 
 int main(int argc, char *argv[])
 {
 
 
-    gtk_init(&argc, &argv);
+  static_argc = argc;
+  static_argv = argv;
+
   struct gengetopt_args_info ai;
   if (cmdline_parser(argc, argv, &ai) != 0) {
     cmdline_parser_print_help();
