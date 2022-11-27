@@ -132,7 +132,7 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition condition, gpoin
                 }
                 break;
                 case AcceptedAction_AUTHENTICATE: {
-                                                        fprintf(stderr, "action authrnticate");
+                                                        fprintf(stderr, "action authenticate");
 
                     const char * password = json_object_get_string_member_or_else(data->root, "password", NULL);
                     if(password != NULL){
