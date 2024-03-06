@@ -231,7 +231,10 @@ static void init_session(AuthDlgData *d){
 
 
 
-
+/**
+ * Authentication request handler of PolkitAgentListener.
+ *
+ */
 static void initiate_authentication(PolkitAgentListener  *listener,
 				    const gchar          *action_id,
 				    const gchar          *message,
