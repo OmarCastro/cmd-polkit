@@ -19,7 +19,13 @@
 #include "polkit-auth-handler.service.h"
 
 
-G_DEFINE_TYPE(CmdPkAgentPolkitListener, cmd_pk_agent_polkit_listener, POLKIT_AGENT_TYPE_LISTENER);
+#ifdef __GNUC__
+#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
+#else
+#  define UNUSED(x) UNUSED_ ## x
+#endif
+
+G_DEFINE_TYPE(CmdPkAgentPolkitListener, cmd_pk_agent_polkit_listener, POLKIT_AGENT_TYPE_LISTENER)
 
 
 
@@ -70,7 +76,7 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
 
 static void auth_dlg_data_free(AuthDlgData *d)
 {
-	g_signal_handlers_disconnect_by_func((void *) d->cancellable, on_cancelled, d);
+	g_signal_handlers_disconnect_by_func(d->cancellable, on_cancelled, d);
 
 	g_object_unref(d->task);
 	g_object_unref(d->session);
@@ -81,7 +87,7 @@ static void auth_dlg_data_free(AuthDlgData *d)
 	g_slice_free(AuthDlgData, d);
 }
 
-static gboolean on_new_input ( GIOChannel *source, GIOCondition condition, gpointer context )
+static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition), gpointer context )
 {
     log__verbose__reading_command_stdout();
     AuthDlgData *data = (AuthDlgData *) context;
@@ -132,8 +138,7 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition condition, gpoin
                 }
                 break;
                 case AcceptedAction_AUTHENTICATE: {
-                                                        fprintf(stderr, "action authenticate");
-
+                    fprintf(stderr, "action authenticate");
                     const char * password = json_object_get_string_member_or_else(data->root, "password", NULL);
                     if(password != NULL){
                         polkit_agent_session_response(data->session, password);
@@ -149,16 +154,16 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition condition, gpoin
     return G_SOURCE_CONTINUE;
 }
 
-static void on_cancelled(GCancellable *cancellable, AuthDlgData *d)
+static void on_cancelled(GCancellable* UNUSED(cancellable), AuthDlgData *d)
 {
-	if (d->session)
+    	if (d->session)
 		polkit_agent_session_cancel(d->session);
 	else
 		auth_dlg_data_free(d);
 }
 
 
-static void on_session_completed(PolkitAgentSession* session,
+static void on_session_completed(PolkitAgentSession* UNUSED(session),
 				 gboolean authorized, AuthDlgData* d)
 { 
       bool canceled = g_cancellable_is_cancelled(d->cancellable);
@@ -180,7 +185,7 @@ static void on_session_completed(PolkitAgentSession* session,
 
 }
 
-static void on_session_request(PolkitAgentSession* session, gchar *req,
+static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req,
 			       gboolean visibility, AuthDlgData *d)
 {
 
@@ -195,15 +200,15 @@ static void on_session_request(PolkitAgentSession* session, gchar *req,
 	//gtk_entry_set_visibility(GTK_ENTRY(d->entry), visibility);
 }
 
-static void on_session_show_error(PolkitAgentSession *session, gchar *text,
-				  AuthDlgData *d)
+static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text,
+				  AuthDlgData* UNUSED(d))
 {
 
       log__verbose__polkit_session_show_error(text);
 }
 
-static void on_session_show_info(PolkitAgentSession *session, gchar *text,
-				  AuthDlgData *d)
+static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *text,
+				  AuthDlgData* UNUSED(d))
 {
   log__verbose__polkit_session_show_info(text);
 }
@@ -330,7 +335,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 
 }
 
-static gboolean initiate_authentication_finish(PolkitAgentListener *listener,
+static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(listener),
 				 GAsyncResult *res, GError **error)
 {
 	log__verbose__finish_polkit_authentication();
@@ -358,7 +363,7 @@ static void cmd_pk_agent_polkit_listener_class_init(CmdPkAgentPolkitListenerClas
 	pkal_class->initiate_authentication_finish = initiate_authentication_finish;
 }
 
-static void cmd_pk_agent_polkit_listener_init(CmdPkAgentPolkitListener *self)
+static void cmd_pk_agent_polkit_listener_init(CmdPkAgentPolkitListener *UNUSED(self))
 {
 }
 
