@@ -12,19 +12,42 @@ deps = [
   dependency('gtk+-3.0')
 ]
 
-sources = files([
-  'src/main.entrypoint.c',
-  'src/polkit-auth-handler.service.c',
+common_sources = [
   'src/cmdline.c',
   'src/logger.c',
+  'src/json-glib.extension.c',
+  'src/accepted-actions.enum.c',
+]
+
+main_sources = [
+  'src/main.entrypoint.c',
+  'src/polkit-auth-handler.service.c',
   'src/error-message.dialog.c',
 
-  'src/json-glib.extension.c',
+]
+main_sources += common_sources
 
-  'src/accepted-actions.enum.c',
-])
+test_sources = [
+  'test/test.entrypoint.c',
+  'test/tap.c'
+]
+test_sources += common_sources
+
+
+sources = files(main_sources)
 
 executable('cmd-polkit-agent', sources,
   dependencies: deps,
   install: true,
 )
+
+test(
+  'foo',
+  executable('cmd-polkit-agent-test', test_sources, dependencies: deps),
+  env: [
+    'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
+    'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+  ],
+  protocol: 'tap',
+)
+
