@@ -17,6 +17,7 @@ def open_rofi():
         exit(0)
     else:
         print( """{"action": "authenticate", "password": "%s"}""" % str(out, "utf-8").rstrip("\n"), flush=True)
+        exit(0)
 
 
 for line in sys.stdin:
