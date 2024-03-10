@@ -22,7 +22,8 @@ function kill_running_app {
 
 function reload {
 	kill_running_app
-	$PROJECT_DIR/build/cmd-polkit-agent -sv -c "python scripts/rofi-example.py" &
+	cd $PROJECT_DIR
+	$PROJECT_DIR/build/cmd-polkit-agent -sv -c "python examples/scripts/rofi-example.py" &
 	current_pid=$! 
 	echo "app running with pid $current_pid"
 
