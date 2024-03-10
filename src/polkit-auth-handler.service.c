@@ -190,14 +190,29 @@ static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req,
 {
 
 	log__verbose__polkit_session_request(req, visibility);
-    gchar * write_message;
-    asprintf(&write_message, R"""({"action": "request password", "prompt":"%s", "message": "%s" })""", req, d->message);
-    blocks_mode_private_data_write_to_channel(d, write_message);
-    free(write_message);
 
-	//g_debug("Request: %s\nVisibility: %i\n", req, visibility);
-	//gtk_label_set_text(GTK_LABEL(d->entry_label), req);
-	//gtk_entry_set_visibility(GTK_ENTRY(d->entry), visibility);
+    g_autoptr(JsonBuilder) builder = json_builder_new ();
+
+    json_builder_begin_object (builder);
+
+    json_builder_set_member_name (builder, "action");
+    json_builder_add_string_value (builder, "request password");
+
+    json_builder_set_member_name (builder, "prompt");
+    json_builder_add_string_value (builder, req);
+
+    json_builder_set_member_name (builder, "message");
+    json_builder_add_string_value (builder, d->message);
+
+    json_builder_end_object (builder);
+
+    g_autoptr(JsonNode) root = json_builder_get_root (builder);
+
+    g_autoptr(JsonGenerator) gen = json_generator_new ();
+    json_generator_set_root (gen, root);
+    g_autofree char *write_message = json_generator_to_data (gen, NULL);
+
+    blocks_mode_private_data_write_to_channel(d, write_message);
 }
 
 static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text,
