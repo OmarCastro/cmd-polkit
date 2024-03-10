@@ -288,7 +288,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     }
 
 
-    if ( ! g_spawn_async_with_pipes ( NULL, cmd_argv, NULL, G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH, NULL, NULL, &(d->cmd_pid), &(cmd_input_fd), &(cmd_output_fd), NULL, &error)) {
+    if ( ! g_spawn_async_with_pipes ( NULL, cmd_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &(d->cmd_pid), &(cmd_input_fd), &(cmd_output_fd), NULL, &error)) {
     
         show_error_message_format("%s", error->message);
         g_cancellable_cancel(d->cancellable);
