@@ -6,10 +6,8 @@
 
 #include <unistd.h>
 #include <string.h>
-#include <errno.h>
 #include <gmodule.h>
 #include <time.h>
-#include <stdint.h>
 #include <fcntl.h>
 #include "logger.h"
 #include "app.h"
@@ -17,6 +15,7 @@
 #include "accepted-actions.enum.h"
 #include "error-message.dialog.h"
 #include "polkit-auth-handler.service.h"
+#include "request-messages.h"
 
 
 #ifdef __GNUC__
@@ -156,81 +155,53 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
 
 static void on_cancelled(GCancellable* UNUSED(cancellable), AuthDlgData *d)
 {
-    	if (d->session)
+    if (d->session) {
 		polkit_agent_session_cancel(d->session);
-	else
+    } else{
 		auth_dlg_data_free(d);
+    }
 }
 
 
-static void on_session_completed(PolkitAgentSession* UNUSED(session),
-				 gboolean authorized, AuthDlgData* d)
+static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean authorized, AuthDlgData* d)
 { 
-      bool canceled = g_cancellable_is_cancelled(d->cancellable);
-        log__verbose__polkit_session_completed(authorized, canceled);
+    bool canceled = g_cancellable_is_cancelled(d->cancellable);
+    log__verbose__polkit_session_completed(authorized, canceled);
 
     if(authorized){
-        blocks_mode_private_data_write_to_channel(d, R"""({"action": "authorization response", "authorized": true })""");
+        g_autofree const char* message = request_message_authorization_authorized();
+        blocks_mode_private_data_write_to_channel(d, message);
     }
     if (authorized || canceled) {
-	//	gtk_label_set_text(GTK_LABEL(d->status), NULL);
 		g_task_return_pointer(d->task, NULL, NULL);
 		auth_dlg_data_free(d);
 		return;
 	}
 	g_object_unref(d->session);
 	d->session = NULL;
-    blocks_mode_private_data_write_to_channel(d, R"""({"action": "authorization response", "authorized": false })""");
+    g_autofree const char* message = request_message_authorization_not_authorized();
+    blocks_mode_private_data_write_to_channel(d, message);
     init_session(d);
 
 }
 
-static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req,
-			       gboolean visibility, AuthDlgData *d)
+static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req, gboolean visibility, AuthDlgData *d)
 {
-
 	log__verbose__polkit_session_request(req, visibility);
-
-    g_autoptr(JsonBuilder) builder = json_builder_new ();
-
-    json_builder_begin_object (builder);
-
-    json_builder_set_member_name (builder, "action");
-    json_builder_add_string_value (builder, "request password");
-
-    json_builder_set_member_name (builder, "prompt");
-    json_builder_add_string_value (builder, req);
-
-    json_builder_set_member_name (builder, "message");
-    json_builder_add_string_value (builder, d->message);
-
-    json_builder_end_object (builder);
-
-    g_autoptr(JsonNode) root = json_builder_get_root (builder);
-
-    g_autoptr(JsonGenerator) gen = json_generator_new ();
-    json_generator_set_root (gen, root);
-    g_autofree char *write_message = json_generator_to_data (gen, NULL);
-
+    g_autofree const char *write_message = request_message_request_password(req, d->message);
     blocks_mode_private_data_write_to_channel(d, write_message);
 }
 
-static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text,
-				  AuthDlgData* UNUSED(d))
+static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
 {
 
       log__verbose__polkit_session_show_error(text);
 }
 
-static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *text,
-				  AuthDlgData* UNUSED(d))
+static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
 {
   log__verbose__polkit_session_show_info(text);
 }
-
-
-
-
 
 static void init_session(AuthDlgData *d){
   if (d->session) {
@@ -325,29 +296,6 @@ static void initiate_authentication(PolkitAgentListener  *listener,
         d->read_channel_watcher = g_io_add_watch(d->read_channel, G_IO_IN, on_new_input, d);
     }
     g_strfreev(cmd_argv);
-
-
-
-
-        //pd->read_channel_fd = cmd_output_fd;
-        //pd->write_channel_fd = cmd_input_fd;
-
-        //int retval = fcntl( pd->read_channel_fd, F_SETFL, fcntl(pd->read_channel_fd, F_GETFL) | O_NONBLOCK);
-        //if (retval != 0){
-
-       //     fprintf(stderr,"Error setting non block on output pipe\n");
-        //    kill(pd->cmd_pid, SIGTERM);
-        //    exit(1);
-
-        //pd->read_channel = g_io_channel_unix_new(pd->read_channel_fd);
-        //pd->write_channel = g_io_channel_unix_new(pd->write_channel_fd);
-        //g_child_watch_add (pd->cmd_pid, on_child_status, sw);
-
-
-        //polkit_agent_session_response(d->session, "teste");
-
-
-
 }
 
 static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(listener),
