@@ -1,6 +1,9 @@
 #build dir
 build/
 
+#cache dir
+.cache
+
 # Prerequisites
 *.d
 
