@@ -9,4 +9,8 @@ mkdir build
 cd build
 meson --prefix=/usr ..
 cd ..
-while inotifywait -e close_write $PROJECT_DIR/src; do (cd $PROJECT_DIR/build; ninja); done
+while inotifywait -e close_write $PROJECT_DIR/src $PROJECT_DIR/test; do 
+    cd $PROJECT_DIR/build
+    ninja
+    meson test
+done

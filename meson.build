@@ -17,6 +17,7 @@ common_sources = [
   'src/logger.c',
   'src/json-glib.extension.c',
   'src/accepted-actions.enum.c',
+  'src/request-messages.c',
 ]
 
 main_sources = [
@@ -42,7 +43,7 @@ executable('cmd-polkit-agent', sources,
 )
 
 test(
-  'foo',
+  'test-suite',
   executable('cmd-polkit-agent-test', test_sources, dependencies: deps),
   env: [
     'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
