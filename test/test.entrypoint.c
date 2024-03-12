@@ -1,23 +1,9 @@
-#include "../src/app.h"
 #include <stdbool.h>
 #include <glib.h>
 #include <locale.h>
 #include <string.h>
 #include "../src/request-messages.h"
 
-
-const char* cmd_line = "test_test.sh";
-static bool runInParallel;
- 
-
-AuthHandlingMode app__get_auth_handling_mode(){
-  return runInParallel ? AuthHandlingMode_PARALLEL : AuthHandlingMode_SERIE;
-}
-
-
-const char*  app__get_cmd_line(){
-  return cmd_line;
-}
 
 typedef struct {
   int obj;
@@ -61,8 +47,6 @@ static void test_request_message_request_password_is_escaped_correctly (Fixture 
 
 
 int main (int argc, char *argv[]) {
-    runInParallel = true;
-
 
     setlocale (LC_ALL, "");
 
