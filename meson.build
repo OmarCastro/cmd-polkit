@@ -15,6 +15,7 @@ deps = [
 common_sources = [
   'src/accepted-actions.enum.c',
   'src/request-messages.c',
+  'src/json-glib.extension.c',
 ]
 
 main_sources = [
@@ -23,7 +24,6 @@ main_sources = [
   'src/error-message.dialog.c',
   'src/cmdline.c',
   'src/logger.c',
-  'src/json-glib.extension.c',
 ]
 main_sources += common_sources
 
