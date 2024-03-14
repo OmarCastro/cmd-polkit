@@ -4,6 +4,9 @@ build/
 #cache dir
 .cache
 
+#nodejs node_modules
+node_modules
+
 # Prerequisites
 *.d
 
