@@ -1,5 +1,7 @@
-#build dir
+#build dirs
 build/
+build-test/
+build-docs/
 
 #cache dir
 .cache
