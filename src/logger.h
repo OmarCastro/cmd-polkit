@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2024 Omar Castro
 #ifndef LOGGER_H
 #define LOGGER_H
 #include <stdbool.h>

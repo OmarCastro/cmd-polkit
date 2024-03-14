@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2024 Omar Castro
 #include <stdlib.h>
 #include <stdbool.h>
 #include "polkit-auth-handler.service.h"

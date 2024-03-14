@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2024 Omar Castro
 #ifndef SERVICE__H__POLKIT_AUTHENTICATION_HANDLER
 #define SERVICE__H__POLKIT_AUTHENTICATION_HANDLER
 

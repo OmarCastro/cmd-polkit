@@ -1,3 +1,5 @@
+// SPDX-License-Identifier: LGPL-2.1-or-later
+// Copyright (C) 2024 Omar Castro
 #ifndef ENUM__H__ACCEPTED_ACTIONS
 #define ENUM__H__ACCEPTED_ACTIONS
 
