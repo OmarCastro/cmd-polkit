@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: meson python nodejs gcovr
+          packages: meson python nodejs gcovr libjson-glib-dev
           version: 1.0
       - name: Setup build-test
         run: ${{ github.workspace }}/dev-tools/github-action-build.sh
