@@ -1,5 +1,7 @@
 :root {
     font-family: sans-serif;
+    font-size: 1rem;
+
     --tab_size: 4;
     --bg-color: #eee;
     --table-bg-color: LightSteelBlue;
@@ -19,10 +21,8 @@
 
     --meter-bg: whitesmoke;
     --meter-border-color: black;
-}
+    --meter-border-color-high: black;
 
-
-.theme-green, .theme-blue {
     --unknown_color: lightgray;
     --low_color: #FF6666;
     --medium_color: #F9FD63;
@@ -34,22 +34,12 @@
     --notTakenDecision_color: red;
     --notInvokedCall_color: red;
     --excluded_color: rgb(255, 241, 229);
-}
 
-.theme-green {
     --high_color: #85E485;
     --covered_color: #85E485;
     --takenBranch_color: green;
     --takenDecision_color: green;
     --invokedCall_color: green;
-}
-
-.theme-blue {
-    --high_color: #66B4FF;
-    --covered_color: #66B4Ff;
-    --takenBranch_color: blue;
-    --takenDecision_color: blue;
-    --invokedCall_color: blue;
 }
 
 @media screen and (prefers-color-scheme: dark) {
@@ -72,11 +62,8 @@
 
         --meter-bg: #202530;
         --meter-border-color: gray;
-    
-    }
+        --meter-border-color-high: rgb(77 146 33);
 
-
-    .theme-green, .theme-blue {
         --unknown_color: #333;
         --low_color: #921F39;
         --medium_color: #755F00;
@@ -88,17 +75,13 @@
         --notTakenDecision_color: #921F39;
         --notInvokedCall_color: #921F39;
         --excluded_color: rgb(19, 17, 16);    
-    }
 
-    .theme-green {
         --high_color: #1d541a;
         --covered_color: #1d541a;
         --takenBranch_color: #0d540a;
         --takenDecision_color: #0d540a;
         --invokedCall_color: #0d540a;
     }
-
-    
 }
     
 
@@ -271,7 +254,6 @@ table.file-list td.coverage-high
 
 /* Common */
 meter {
-    appearance: none;
     width: 30vw;
     min-width: 4em;
     max-width: 15em;
@@ -315,6 +297,7 @@ meter.coverage-medium::-webkit-meter-optimum-value
 meter.coverage-high::-webkit-meter-optimum-value
 {
     background: var(--high_color);
+    border-color: var(--meter-border-color-high);
 }
 
 /* Mozilla */
@@ -329,7 +312,7 @@ meter:-moz-meter-sub-optimum::-moz-meter-bar,
 meter:-moz-meter-sub-sub-optimum::-moz-meter-bar
 {
     /* Inner shadow for Mozilla */
-    border: solid 1px black;
+    border: solid 1px var(--meter-border-color);
 }
 
 meter.coverage-none:-moz-meter-optimum::-moz-meter-bar,
@@ -346,11 +329,12 @@ meter.coverage-medium:-moz-meter-optimum::-moz-meter-bar
 meter.coverage-high:-moz-meter-optimum::-moz-meter-bar
 {
     background: var(--high_color);
+    border-color: var(--meter-border-color-high);
 }
 
 /*** End of Meter formats ***/
 .file-list td, .file-list th {
-    padding: 0 10px;
+    padding: 0.4em 0.8em;
     font-weight: bold;
 }
 
