@@ -13,7 +13,7 @@
 
 
 bool silenced_logs = false;
-bool verbose = false;
+bool verbose_logs = false;
 
 
 const char * currentFile = "";
@@ -35,7 +35,7 @@ void log__silence(){
   silenced_logs = true;
 }
 void log__verbose(){
-  verbose = true;
+  verbose_logs = true;
 }
 
 // log error, print help and exits
@@ -150,7 +150,7 @@ void log__verbose__reading_command_stdout(){
 static void log__verbose_formatted( const char* format, ... )
 {
 
-  if(!verbose || silenced_logs){
+  if(!verbose_logs || silenced_logs){
     return;
   }
   va_list arglist;
@@ -163,8 +163,9 @@ static void log__verbose_formatted( const char* format, ... )
 }
 
 static void log__fail_cmdline(const char* text){
-  fprintf(stderr, "Error: %s\n", text);
-  cmdline_parser_print_help();
-  exit(1);
+  if(!silenced_logs) {
+    fprintf(stderr, "Error: %s\n", text);
+    cmdline_parser_print_help();
+  }
 }
 

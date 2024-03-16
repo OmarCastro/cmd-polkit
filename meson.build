@@ -25,6 +25,7 @@ main_sources = [
 ]
 
 test_sources = [
+  'test/logger.mock.c',
   'test/test.entrypoint.c',
 ]
 

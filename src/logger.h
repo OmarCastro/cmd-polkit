@@ -23,13 +23,6 @@ void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAM
 #define log__fail_cmdline__parallel_or_series_required()    log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_VALUES)
 #endif
 
-
-
-void log__error_cmdline__command_required(MACRO__SOURCE_LOCATION_PARAMS);
-
-
-
-
 // logs on verbose only
 
 void log__verbose__cmd_and_mode(MACRO__SOURCE_LOCATION_PARAMS);

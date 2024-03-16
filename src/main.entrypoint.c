@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 
   if( !ai.command_given ){
     log__fail_cmdline__command_required();
+    exit(1);
   }
 
   cmd_line = ai.command_arg;
@@ -87,10 +88,12 @@ int main(int argc, char *argv[])
 
   if(runInSerie && runInParallel){
     log__fail_cmdline__either_parallel_or_series();
+    exit(1);
   }
 
   if(!runInSerie && !runInParallel){
     log__fail_cmdline__parallel_or_series_required();
+    exit(1);
   }
 
   log__verbose__cmd_and_mode();
