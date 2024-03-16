@@ -6,13 +6,13 @@
 #include <stdarg.h>
 #include <grp.h>
 #include <pwd.h>
-#include "polkit-auth-handler.service.h"
+#include <polkit/polkit.h>
 #include "cmdline.h"
 #include "app.h"
 #include "logger.h"
 
 
-bool silenced = false;
+bool silenced_logs = false;
 bool verbose = false;
 
 
@@ -25,7 +25,6 @@ int currentLine = 0;
 
 struct LogMessage {};
 
-static void log_stderr_text(const char* text);
 static void log__fail_cmdline(const char* text);
 static void log__verbose_formatted(const char* format, ...);
 static inline void log__verbose_raw(const char* text){ log__verbose_formatted("%s", text); }
@@ -33,7 +32,7 @@ static inline void log__verbose_raw(const char* text){ log__verbose_formatted("%
 
 
 void log__silence(){
-  silenced = true;
+  silenced_logs = true;
 }
 void log__verbose(){
   verbose = true;
@@ -151,7 +150,7 @@ void log__verbose__reading_command_stdout(){
 static void log__verbose_formatted( const char* format, ... )
 {
 
-  if(!verbose || silenced){
+  if(!verbose || silenced_logs){
     return;
   }
   va_list arglist;
@@ -163,15 +162,8 @@ static void log__verbose_formatted( const char* format, ... )
 
 }
 
-
-static void log_stderr_text(const char* text){
-  if(!silenced){
-    fprintf(stderr, "Error: %s\n", text);
-  }
-}
-
 static void log__fail_cmdline(const char* text){
-  log_stderr_text(text);
+  fprintf(stderr, "Error: %s\n", text);
   cmdline_parser_print_help();
   exit(1);
 }
