@@ -100,12 +100,16 @@ void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const G
     }
 }
 
-void log__verbose__polkit_session_completed(bool authorized, bool canceled){
+void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled){
+  CHECK_VERBOSE()
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_raw("Polkit session completed");
   log__verbose_formatted("└- {\"authorized\": \"%s\", \"canceled\":\"%s\" })", authorized ? "yes": "no", canceled ? "yes": "no");
 }
 
-void log__verbose__polkit_session_show_error(const char *text){
+void log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_PARAMS, const char *text){
+  CHECK_VERBOSE()
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_formatted("Polkit session show error: %s", text);
 }
 

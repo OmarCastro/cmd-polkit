@@ -29,8 +29,8 @@ void log__verbose__cmd_and_mode(MACRO__SOURCE_LOCATION_PARAMS);
 void log__verbose__init_polkit_listener(MACRO__SOURCE_LOCATION_PARAMS);
 void log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_PARAMS, const char *action_id, const char *message, const char *icon_name, const char * cookie );
 void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const GList* const list);
-void log__verbose__polkit_session_completed(bool authorized, bool canceled);
-void log__verbose__polkit_session_show_error(const char *text);
+void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled);
+void log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_PARAMS, const char *text);
 void log__verbose__polkit_session_show_info(const char *text);
 void log__verbose__polkit_session_request(const char *text, bool visibility);
 void log__verbose__finish_polkit_authentication();
@@ -43,11 +43,14 @@ void log__verbose__reading_command_stdout();
 
 
 #ifndef LOGGER_C
-#define log__verbose__cmd_and_mode()  log__verbose__cmd_and_mode(MACRO__SOURCE_LOCATION_VALUES);
-#define log__verbose__init_polkit_listener()    log__verbose__init_polkit_listener(MACRO__SOURCE_LOCATION_VALUES);
+#define log__verbose__cmd_and_mode()                   log__verbose__cmd_and_mode(MACRO__SOURCE_LOCATION_VALUES)
+#define log__verbose__init_polkit_listener()           log__verbose__init_polkit_listener(MACRO__SOURCE_LOCATION_VALUES)
 #define log__verbose__init_polkit_authentication(action_id, message, icon_name, cookie) \
-        log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_VALUES, action_id, message, icon_name, cookie);
-#define log__verbose__polkit_auth_identities(list) log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_VALUES, list);
+        log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_VALUES, action_id, message, icon_name, cookie)
+#define log__verbose__polkit_auth_identities(list)     log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_VALUES, list)
+#define log__verbose__polkit_session_completed(authorized, canceled) \
+        log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_VALUES, authorized, canceled)
+#define log__verbose__polkit_session_show_error(text)  log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_VALUES, text)
 
 #endif
 
