@@ -8,6 +8,7 @@
 #include "src/logger.h"
 #include "logger.mock.h"
 #include "../src/request-messages.h"
+#include "../src/accepted-actions.enum.h"
 
 
 typedef struct {
@@ -109,6 +110,28 @@ Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\"
 	g_list_free(list);
 }
 
+static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions (Fixture *fixture, gconstpointer user_data) {
+	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
+	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
+}
+
+static void test_accepted_action_value_of_str_returns_unknown_on_invalid_actions (Fixture *fixture, gconstpointer user_data) {
+	g_assert_true(accepted_action_value_of_str("unknown") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str(NULL) == AcceptedAction_UNKNOWN);
+}
+
+static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixture, gconstpointer user_data) {
+	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
+	g_assert_true(accepted_action_value_of_str("Cancel") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str("CANCEL") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
+	g_assert_true(accepted_action_value_of_str("Authenticate") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str("AUTHENTICATE") == AcceptedAction_UNKNOWN);
+
+}
+
+
+
 int main (int argc, char *argv[]) {
 
     setlocale (LC_ALL, "");
@@ -122,6 +145,9 @@ int main (int argc, char *argv[]) {
 	g_test_add ("/ logger / silenced level logs nothing", Fixture, NULL, test_set_up, test_silenced_logs, test_tear_down);
 	g_test_add ("/ logger / polkit authentication identity information is logged as json", Fixture, NULL, test_set_up, test_log_polkit_auth_identities, test_tear_down);
 	g_test_add ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", Fixture, NULL, test_set_up, test_log_invalid_polkit_auth_identities, test_tear_down);
+	g_test_add ("/ accepted actions / accepted_action_value_of_str returns expected value on valid action", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_returns_expected_values_on_valid_actions, test_tear_down);
+	g_test_add ("/ accepted actions / accepted_action_value_of_str returns UNKNOWN on invalid action", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_returns_unknown_on_invalid_actions, test_tear_down);
+	g_test_add ("/ accepted actions / accepted_action_value_of_str is case sensitive", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_is_case_sensitive, test_tear_down);
 
   return g_test_run ();
 }
