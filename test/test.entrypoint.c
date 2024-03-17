@@ -7,7 +7,7 @@
 #include <polkit/polkit.h>
 #include "src/logger.h"
 #include "logger.mock.h"
-#include "../src/request-messages.c"
+#include "../src/request-messages.h"
 
 
 typedef struct {

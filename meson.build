@@ -12,23 +12,28 @@ deps = [
   dependency('gtk+-3.0')
 ]
 
+common_sources = [
+  'src/request-messages.c',
+  'src/accepted-actions.enum.c',
+  'src/json-glib.extension.c',
+]
+
 main_sources = [
   'src/main.entrypoint.c',
   'src/polkit-auth-handler.service.c',
   'src/error-message.dialog.c',
   'src/cmdline.c',
   'src/logger.c',
-  'src/request-messages.c',
-  'src/accepted-actions.enum.c',
-  'src/json-glib.extension.c',
-
 ]
+
+main_sources += common_sources
 
 test_sources = [
   'test/logger.mock.c',
   'test/test.entrypoint.c',
 ]
 
+test_sources += common_sources
 
 sources = files(main_sources)
 
