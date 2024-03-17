@@ -80,8 +80,8 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 
 static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
-	g_autofree PolkitIdentity * user = polkit_unix_user_new(0);
-	g_autofree PolkitIdentity * group = polkit_unix_group_new(0);
+	PolkitIdentity * user = polkit_unix_user_new(0);
+	PolkitIdentity * group = polkit_unix_group_new(0);
 	GList *list = NULL;
 	list = g_list_append(list, user);
 	list = g_list_append(list, group);
