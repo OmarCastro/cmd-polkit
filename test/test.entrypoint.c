@@ -61,7 +61,7 @@ static void test_default_logs (Fixture *fixture, gconstpointer user_data) {
 	log__fail_cmdline__command_required();
 	log__fail_cmdline__either_parallel_or_series();
 	log__fail_cmdline__parallel_or_series_required();
-	log__verbose__cmd_and_mode()
+	log__verbose__cmd_and_mode();
 	g_assert_cmpstr(get_stderr()->str, ==, "\
 Error: command argument is required\n\
 Error: Only parallel or serial must be selected, not both\n\
@@ -73,7 +73,7 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 	log__fail_cmdline__command_required();
 	log__fail_cmdline__either_parallel_or_series();
 	log__fail_cmdline__parallel_or_series_required();
-	log__verbose__cmd_and_mode()
+	log__verbose__cmd_and_mode();
 	g_assert_cmpstr(get_stderr()->str, ==, "");
 }
 
