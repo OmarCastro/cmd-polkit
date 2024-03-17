@@ -10,6 +10,7 @@
 #include "cmdline.h"
 #include "app.h"
 #include "logger.h"
+#include <json-glib/json-glib.h>
 
 
 bool silenced_logs = false;
@@ -21,6 +22,7 @@ const char * currentFunction = "";
 int currentLine = 0;
 
 #define UPDATE_CURRENT_SOURCE_LOCATION() currentFile = file; currentFunction = function; currentLine = line;
+#define CHECK_VERBOSE() if(!verbose_logs || silenced_logs) { return; }
 
 
 struct LogMessage {};
@@ -84,31 +86,23 @@ void log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_PARAMS, con
 }
 
 
+const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity);
 void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const GList* const identities){
+  CHECK_VERBOSE()
   UPDATE_CURRENT_SOURCE_LOCATION()
   const GList *p;
 
-  log__verbose_raw("polkit identities");
+  log__verbose_raw("Polkit identities");
   for (p = identities; p != NULL; p = p->next) {
       PolkitIdentity *id = (PolkitIdentity *)p->data;
-      if(POLKIT_IS_UNIX_USER(id)) {
-          uid_t uid = polkit_unix_user_get_uid(POLKIT_UNIX_USER(id));
-          struct passwd *pwd = getpwuid(uid);
-          log__verbose_formatted(R"""(└- {"type": "user", "name":"%s", "id": %d, "group id": %d })""", pwd->pw_name, pwd->pw_uid, pwd->pw_gid);
-        } else if(POLKIT_IS_UNIX_GROUP(id)) {
-          gid_t gid = polkit_unix_group_get_gid(POLKIT_UNIX_GROUP(id));
-          struct group *grp = getgrgid(gid);
-          log__verbose_formatted(R"""(└- {"type": "group", "name": "%s", "uid":%d })""", grp->gr_name, grp->gr_gid);
-        } else {
-          log__verbose_formatted(R"""(└- {"type": "other", "value":"%s" })""", polkit_identity_to_string(id));
-        }
-
+      g_autofree const gchar* json = polkit_auth_identity_to_json_string(id);
+      log__verbose_formatted("└- %s", json);
     }
 }
 
 void log__verbose__polkit_session_completed(bool authorized, bool canceled){
-  log__verbose_raw("polkit session completed");
-  log__verbose_formatted(R"""(└- {"authorized": "%s", "canceled":"%s" })""", authorized ? "yes": "no", canceled ? "yes": "no");
+  log__verbose_raw("Polkit session completed");
+  log__verbose_formatted("└- {\"authorized\": \"%s\", \"canceled\":\"%s\" })", authorized ? "yes": "no", canceled ? "yes": "no");
 }
 
 void log__verbose__polkit_session_show_error(const char *text){
@@ -149,10 +143,7 @@ void log__verbose__reading_command_stdout(){
 
 static void log__verbose_formatted( const char* format, ... )
 {
-
-  if(!verbose_logs || silenced_logs){
-    return;
-  }
+  CHECK_VERBOSE()
   va_list arglist;
   printf( "Vrbos:%s:", currentFunction );
   va_start( arglist, format );
@@ -169,3 +160,50 @@ static void log__fail_cmdline(const char* text){
   }
 }
 
+
+const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity){
+    g_autoptr(JsonBuilder) builder = json_builder_new ();
+
+    json_builder_begin_object (builder);
+
+    if(POLKIT_IS_UNIX_USER(identity)) {
+      uid_t uid = polkit_unix_user_get_uid(POLKIT_UNIX_USER(identity));
+      struct passwd *pwd = getpwuid(uid);
+      json_builder_set_member_name (builder, "type");
+      json_builder_add_string_value (builder, "user");
+
+      json_builder_set_member_name (builder, "name");
+      json_builder_add_string_value (builder, pwd->pw_name);
+
+      json_builder_set_member_name (builder, "id");
+      json_builder_add_int_value (builder, pwd->pw_uid);
+
+      json_builder_set_member_name (builder, "group id");
+      json_builder_add_int_value (builder, pwd->pw_gid);
+
+    } else if(POLKIT_IS_UNIX_GROUP(identity)) {
+      gid_t gid = polkit_unix_group_get_gid(POLKIT_UNIX_GROUP(identity));
+      struct group *grp = getgrgid(gid);
+
+      json_builder_set_member_name (builder, "type");
+      json_builder_add_string_value (builder, "group");
+
+      json_builder_set_member_name (builder, "name");
+      json_builder_add_string_value (builder, grp->gr_name);
+
+      json_builder_set_member_name (builder, "id");
+      json_builder_add_int_value (builder, grp->gr_gid);
+    } else {
+      json_builder_set_member_name (builder, "type");
+      json_builder_add_string_value (builder, "other");
+
+      json_builder_set_member_name (builder, "value");
+      json_builder_add_string_value (builder, polkit_identity_to_string(identity));
+    }
+
+    json_builder_end_object (builder);
+    g_autoptr(JsonNode) root = json_builder_get_root (builder);
+    g_autoptr(JsonGenerator) gen = json_generator_new ();
+    json_generator_set_root (gen, root);
+    return json_generator_to_data (gen, NULL);
+}
