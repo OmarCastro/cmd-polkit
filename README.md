@@ -7,7 +7,7 @@
 <picture>
     <img src="https://omarcastro.github.io/cmd-polkit/reports/test-results-badge-a11y.svg">
 </picture>
-</a><a href="https://omarcastro.github.io/its-a-qrcode/reports/coveragereport" aria-label="Show test code coverage information">
+</a><a href="https://omarcastro.github.io/cmd-polkit/reports/coveragereport" aria-label="Show test code coverage information">
 <picture>
     <img src="https://omarcastro.github.io/cmd-polkit/reports/coverage-badge-a11y.svg">
 </picture>
