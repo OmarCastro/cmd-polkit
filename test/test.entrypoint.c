@@ -4,6 +4,7 @@
 #include <string.h>
 #include <stdio.h>
 #include "../src/app.h"
+#include <polkit/polkit.h>
 #include "src/logger.h"
 #include "logger.mock.h"
 #include "../src/request-messages.c"
@@ -12,6 +13,11 @@
 typedef struct {
   int obj;
 } Fixture;
+
+// mock
+const char*  app__get_cmd_line(){
+  return "command test";
+}
 
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){
@@ -56,7 +62,10 @@ static void test_default_logs (Fixture *fixture, gconstpointer user_data) {
 	log__fail_cmdline__either_parallel_or_series();
 	log__fail_cmdline__parallel_or_series_required();
 	log__verbose__cmd_and_mode()
-	g_assert_cmpstr(get_stderr()->str, ==, "Error: command argument is required\nError: Only parallel or serial must be selected, not both\nError: Parallel or serial option are required\n");
+	g_assert_cmpstr(get_stderr()->str, ==, "\
+Error: command argument is required\n\
+Error: Only parallel or serial must be selected, not both\n\
+Error: Parallel or serial option are required\n");
 }
 
 static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
@@ -69,7 +78,21 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 }
 
 
-
+static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	g_autofree PolkitIdentity * user = polkit_unix_user_new(0);
+	g_autofree PolkitIdentity * group = polkit_unix_group_new(0);
+	GList *list = NULL;
+	list = g_list_append(list, user);
+	list = g_list_append(list, group);
+	log__verbose__polkit_auth_identities(list);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_polkit_auth_identities:Polkit identities\n\
+Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
+Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
+");
+	g_list_free(list);
+}
 
 int main (int argc, char *argv[]) {
 
@@ -82,6 +105,7 @@ int main (int argc, char *argv[]) {
     g_test_add ("/ request messages / request message request password is escaped correctly", Fixture, NULL, test_set_up, test_request_message_request_password_is_escaped_correctly, test_tear_down);
     g_test_add ("/ logger / default level logs failure and normal logs", Fixture, NULL, test_set_up, test_default_logs, test_tear_down);
 	g_test_add ("/ logger / silenced level logs nothing", Fixture, NULL, test_set_up, test_silenced_logs, test_tear_down);
+	g_test_add ("/ logger / polkit user and group information is logged as json", Fixture, NULL, test_set_up, test_log_polkit_auth_identities, test_tear_down);
 
   return g_test_run ();
 }

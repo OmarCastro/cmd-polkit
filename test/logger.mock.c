@@ -29,16 +29,16 @@ static void mock_fprintf(FILE *stream, const char *format, ...){
 
 }
 
+static void mock_vprintf(const char *format, va_list arglist){
+  g_string_append_vprintf( get_stdout(), format, arglist );
+}
+
 
 // mock
 #define printf(f_, ...) mock_printf((f_), ##__VA_ARGS__)
 #define fprintf(s_, f_, ...) mock_fprintf((s_),(f_), ##__VA_ARGS__)
+#define vprintf(f_, a_) mock_vprintf((f_), (a_))
 
-
-// mock
-const char*  app__get_cmd_line(){
-  return "command test";
-}
 
 // mock
 void cmdline_parser_print_help(void) {
