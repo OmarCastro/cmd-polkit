@@ -81,19 +81,19 @@ int main(int argc, char *argv[])
   if ( !g_shell_parse_argv ( ai.command_arg, NULL, &cmd_argv, &error ) ){
       fprintf(stderr, "Unable to parse cmdline options: %s\n", error->message);
       g_error_free ( error );
-      return 0;
+      return 1;
   }
 
   g_strfreev(cmd_argv);
 
   if(runInSerie && runInParallel){
     log__fail_cmdline__either_parallel_or_series();
-    exit(1);
+    return 1;
   }
 
   if(!runInSerie && !runInParallel){
     log__fail_cmdline__parallel_or_series_required();
-    exit(1);
+    return 1;
   }
 
   log__verbose__cmd_and_mode();
