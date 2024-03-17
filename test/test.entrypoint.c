@@ -124,8 +124,10 @@ static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixtur
 	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
 	g_assert_true(accepted_action_value_of_str("Cancel") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("CANCEL") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str("cANCEL") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
 	g_assert_true(accepted_action_value_of_str("Authenticate") == AcceptedAction_UNKNOWN);
+	g_assert_true(accepted_action_value_of_str("aUTHENTICATE") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("AUTHENTICATE") == AcceptedAction_UNKNOWN);
 
 }
