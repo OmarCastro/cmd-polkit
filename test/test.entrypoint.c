@@ -94,6 +94,21 @@ Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"group\",\"name\":\"root\"
 	g_list_free(list);
 }
 
+static void test_log_invalid_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	GList *list = NULL;
+	GList *invalidTypeObject = g_list_alloc();
+	list = g_list_append(list, NULL);
+	list = g_list_append(list, invalidTypeObject);
+	log__verbose__polkit_auth_identities(list);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_invalid_polkit_auth_identities:Polkit identities\n\
+Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\":\"identity is null\"}\n\
+Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\":\"invalid type: not a polkit identity\"}\n\
+");
+	g_list_free(list);
+}
+
 int main (int argc, char *argv[]) {
 
     setlocale (LC_ALL, "");
@@ -105,7 +120,8 @@ int main (int argc, char *argv[]) {
     g_test_add ("/ request messages / request message request password is escaped correctly", Fixture, NULL, test_set_up, test_request_message_request_password_is_escaped_correctly, test_tear_down);
     g_test_add ("/ logger / default level logs failure and normal logs", Fixture, NULL, test_set_up, test_default_logs, test_tear_down);
 	g_test_add ("/ logger / silenced level logs nothing", Fixture, NULL, test_set_up, test_silenced_logs, test_tear_down);
-	g_test_add ("/ logger / polkit user and group information is logged as json", Fixture, NULL, test_set_up, test_log_polkit_auth_identities, test_tear_down);
+	g_test_add ("/ logger / polkit authentication identity information is logged as json", Fixture, NULL, test_set_up, test_log_polkit_auth_identities, test_tear_down);
+	g_test_add ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", Fixture, NULL, test_set_up, test_log_invalid_polkit_auth_identities, test_tear_down);
 
   return g_test_run ();
 }

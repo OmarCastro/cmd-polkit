@@ -170,7 +170,13 @@ const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity){
 
     json_builder_begin_object (builder);
 
-    if(POLKIT_IS_UNIX_USER(identity)) {
+    if(identity == NULL){
+      json_builder_set_member_name (builder, "type");
+      json_builder_add_string_value (builder, "error");
+
+      json_builder_set_member_name (builder, "error");
+      json_builder_add_string_value (builder, "identity is null");
+    } else if(POLKIT_IS_UNIX_USER(identity)) {
       uid_t uid = polkit_unix_user_get_uid(POLKIT_UNIX_USER(identity));
       struct passwd *pwd = getpwuid(uid);
       json_builder_set_member_name (builder, "type");
@@ -197,12 +203,18 @@ const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity){
 
       json_builder_set_member_name (builder, "id");
       json_builder_add_int_value (builder, grp->gr_gid);
-    } else {
+    } else if(POLKIT_IS_IDENTITY(identity)){
       json_builder_set_member_name (builder, "type");
       json_builder_add_string_value (builder, "other");
 
       json_builder_set_member_name (builder, "value");
       json_builder_add_string_value (builder, polkit_identity_to_string(identity));
+    } else {
+      json_builder_set_member_name (builder, "type");
+      json_builder_add_string_value (builder, "error");
+
+      json_builder_set_member_name (builder, "error");
+      json_builder_add_string_value (builder, "invalid type: not a polkit identity");
     }
 
     json_builder_end_object (builder);
