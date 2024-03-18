@@ -7,8 +7,9 @@ PROJECT_DIR=$(pwd)
 build_project() {
     cd $PROJECT_DIR/build-test
     meson build
-    meson test
-    ninja coverage-html
+    meson test > /dev/null
+    RET=$?
+    cat meson-logs/testlog.txt
 }
 
 rm -rf build-test
