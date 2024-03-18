@@ -9,6 +9,7 @@
 #include "logger.mock.h"
 #include "../src/request-messages.h"
 #include "../src/accepted-actions.enum.h"
+#include "../src/json-glib.extension.h"
 
 
 typedef struct {
@@ -129,10 +130,59 @@ static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixtur
 	g_assert_true(accepted_action_value_of_str("Authenticate") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("aUTHENTICATE") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("AUTHENTICATE") == AcceptedAction_UNKNOWN);
+}
 
+static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer user_data) {
+	g_autoptr(JsonParser) parser = json_parser_new ();
+	const gchar* text = "{\
+		\"true\":true,\
+		\"false\": false,\
+		\"number\": 1,\
+		\"string\": \"string\",\
+		\"null\": null\
+		}";
+	GError *error = NULL;
+	json_parser_load_from_data(parser, text, strlen(text), &error);
+	g_assert_no_error(error);
+	JsonNode *root = json_parser_get_root(parser);
+	g_assert_true(json_node_get_value_type(root) == JSON_TYPE_OBJECT);
+	JsonObject * node = json_node_get_object(root);
+
+
+	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "true") , "test") ,==, "test");
+	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "false") , "test") ,==, "test");
+	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "number") , "test") ,==, "test");
+	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "string") , "test") ,==, "string");
+	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "null") , "test") ,==, "test");
+}
+
+static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpointer user_data) {
+	g_autoptr(JsonParser) parser = json_parser_new ();
+	const gchar* text = "{\
+		\"true\":true,\
+		\"false\": false,\
+		\"number\": 1,\
+		\"string\": \"string\",\
+		\"null\": null\
+		}";
+	GError *error = NULL;
+	json_parser_load_from_data(parser, text, strlen(text), &error);
+	g_assert_no_error(error);
+	JsonNode *root = json_parser_get_root(parser);
+	g_assert_true(json_node_get_value_type(root) == JSON_TYPE_OBJECT);
+	JsonObject * node = json_node_get_object(root);
+
+
+	g_assert_cmpstr(json_object_get_string_member_or_else( node, "true", "test") ,==, "test");
+	g_assert_cmpstr(json_object_get_string_member_or_else( node, "false" , "test") ,==, "test");
+	g_assert_cmpstr(json_object_get_string_member_or_else( node, "number" , "test") ,==, "test");
+	g_assert_cmpstr(json_object_get_string_member_or_else( node, "string" , "test") ,==, "string");
+	g_assert_cmpstr(json_object_get_string_member_or_else( node, "null" , "test") ,==, "test");
 }
 
 
+
+#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
 int main (int argc, char *argv[]) {
 
@@ -140,16 +190,21 @@ int main (int argc, char *argv[]) {
 
     g_test_init (&argc, &argv, NULL);
 
-    // Define the tests.
-    g_test_add ("/ request messages / all request messages are single line", Fixture, NULL, test_set_up, test_all_request_messages_are_single_line, test_tear_down);
-    g_test_add ("/ request messages / request message request password is escaped correctly", Fixture, NULL, test_set_up, test_request_message_request_password_is_escaped_correctly, test_tear_down);
-    g_test_add ("/ logger / default level logs failure and normal logs", Fixture, NULL, test_set_up, test_default_logs, test_tear_down);
-	g_test_add ("/ logger / silenced level logs nothing", Fixture, NULL, test_set_up, test_silenced_logs, test_tear_down);
-	g_test_add ("/ logger / polkit authentication identity information is logged as json", Fixture, NULL, test_set_up, test_log_polkit_auth_identities, test_tear_down);
-	g_test_add ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", Fixture, NULL, test_set_up, test_log_invalid_polkit_auth_identities, test_tear_down);
-	g_test_add ("/ accepted actions / accepted_action_value_of_str returns expected value on valid action", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_returns_expected_values_on_valid_actions, test_tear_down);
-	g_test_add ("/ accepted actions / accepted_action_value_of_str returns UNKNOWN on invalid action", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_returns_unknown_on_invalid_actions, test_tear_down);
-	g_test_add ("/ accepted actions / accepted_action_value_of_str is case sensitive", Fixture, NULL, test_set_up, test_accepted_action_value_of_str_is_case_sensitive, test_tear_down);
+	#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
-  return g_test_run ();
+    // Define the tests.
+    test ("/ request messages / all request messages are single line", test_all_request_messages_are_single_line);
+    test ("/ request messages / request message request password is escaped correctly", test_request_message_request_password_is_escaped_correctly);
+    test ("/ logger / default level logs failure and normal logs", test_default_logs);
+	test ("/ logger / silenced level logs nothing", test_silenced_logs);
+	test ("/ logger / polkit authentication identity information is logged as json", test_log_polkit_auth_identities);
+	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
+	test ("/ accepted actions / accepted_action_value_of_str returns expected value on valid action", test_accepted_action_value_of_str_returns_expected_values_on_valid_actions);
+	test ("/ accepted actions / accepted_action_value_of_str returns UNKNOWN on invalid action", test_accepted_action_value_of_str_returns_unknown_on_invalid_actions);
+	test ("/ accepted actions / accepted_action_value_of_str is case sensitive", test_accepted_action_value_of_str_is_case_sensitive);
+	test ("/ json glib extensions / json_node_get_string_or_else returns string value or else value if not a string", test_json_node_get_string_or_else);
+	test ("/ json glib extensions / json_object_get_string_member_or_else returns string value or else value if not a string", test_json_node_get_string_member_or_else);
+
+	#undef test
+	return g_test_run ();
 }
