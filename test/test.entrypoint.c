@@ -133,7 +133,6 @@ static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixtur
 }
 
 static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer user_data) {
-	g_autoptr(JsonParser) parser = json_parser_new ();
 	const gchar* text = "{\
 		\"true\":true,\
 		\"false\": false,\
@@ -142,9 +141,8 @@ static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer u
 		\"null\": null\
 		}";
 	GError *error = NULL;
-	json_parser_load_from_data(parser, text, strlen(text), &error);
+	g_autoptr(JsonNode) root = json_from_string(text, &error);
 	g_assert_no_error(error);
-	JsonNode *root = json_parser_get_root(parser);
 	g_assert_true(json_node_get_value_type(root) == JSON_TYPE_OBJECT);
 	JsonObject * node = json_node_get_object(root);
 
@@ -157,7 +155,6 @@ static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer u
 }
 
 static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpointer user_data) {
-	g_autoptr(JsonParser) parser = json_parser_new ();
 	const gchar* text = "{\
 		\"true\":true,\
 		\"false\": false,\
@@ -166,9 +163,8 @@ static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpo
 		\"null\": null\
 		}";
 	GError *error = NULL;
-	json_parser_load_from_data(parser, text, strlen(text), &error);
+	g_autoptr(JsonNode) root = json_from_string(text, &error);
 	g_assert_no_error(error);
-	JsonNode *root = json_parser_get_root(parser);
 	g_assert_true(json_node_get_value_type(root) == JSON_TYPE_OBJECT);
 	JsonObject * node = json_node_get_object(root);
 
