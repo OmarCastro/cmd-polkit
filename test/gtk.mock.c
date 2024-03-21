@@ -32,15 +32,15 @@ GtkWidget* mock_gtk_message_dialog_new      (GtkWindow      *parent,
                                         GtkButtonsType  buttons,
                                         const gchar    *message_format,
                                         ...) {
-    GtkDialog* result = g_slice_new0(GtkDialog);
-    return (GtkWidget* ) result;
+    // Mock implementation: return a dummy GtkWidget pointer
+    return NULL;
 }
 
 void mock_gtk_widget_destroy		  (GtkWidget	       *widget){
-    free(widget);
+    // Mock implementation: do nothing
 }
 
 
 void mock_gtk_window_set_title (GtkWindow *window, const gchar  *title){
-    // no-op
+    // Mock implementation: do nothing
 }
