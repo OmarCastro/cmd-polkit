@@ -10,6 +10,7 @@
 #include "../src/request-messages.h"
 #include "../src/accepted-actions.enum.h"
 #include "../src/json-glib.extension.h"
+#include "error-message.mock.h"
 
 
 typedef struct {
@@ -21,9 +22,20 @@ const char*  app__get_cmd_line(){
   return "command test";
 }
 
+Application app_get(){
+  return (Application){
+      .argc = 0 ,
+      .argv = NULL ,
+      .command_line = app__get_cmd_line() ,
+      .handling_mode = AuthHandlingMode_PARALLEL
+  };
+}
+
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){
 	reset_logs();
+	setup_gtk_mock();
+	reset_lazy_init_gtk();
 }
 
 static void test_tear_down (Fixture *fixture, gconstpointer user_data){
@@ -176,6 +188,20 @@ static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpo
 	g_assert_cmpstr(json_object_get_string_member_or_else( node, "null" , "test") ,==, "test");
 }
 
+static void test_error_message_dialog_inits_once (Fixture *fixture, gconstpointer user_data) {
+	lazy_init_gtk();
+	lazy_init_gtk();
+	g_assert_true(called_times_gtk_init() == 1);
+}
+
+static void test_error_message_dialog_runs_gtk_dialog (Fixture *fixture, gconstpointer user_data) {
+	show_error_message_format("hello %s", "world");
+	lazy_init_gtk(); 
+	lazy_init_gtk();
+	g_assert_true(called_times_gtk_init() == 1);
+}
+
+
 
 
 #define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
@@ -200,6 +226,8 @@ int main (int argc, char *argv[]) {
 	test ("/ accepted actions / accepted_action_value_of_str is case sensitive", test_accepted_action_value_of_str_is_case_sensitive);
 	test ("/ json glib extensions / json_node_get_string_or_else returns string value or else value if not a string", test_json_node_get_string_or_else);
 	test ("/ json glib extensions / json_object_get_string_member_or_else returns string value or else value if not a string", test_json_node_get_string_member_or_else);
+	test ("/ error message dialog / lazy gtk init inits gtk once", test_error_message_dialog_inits_once);
+	test ("/ error message dialog / show message runs gtk dialog", test_error_message_dialog_runs_gtk_dialog);
 
 	#undef test
 	return g_test_run ();
