@@ -30,6 +30,8 @@ main_sources += common_sources
 
 test_sources = [
   'test/logger.mock.c',
+  'test/gtk.mock.c',
+  'test/error-message.mock.c',
   'test/test.entrypoint.c',
 ]
 
