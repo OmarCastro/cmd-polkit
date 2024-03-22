@@ -1,3 +1,4 @@
+#! /bin/sh
 
 while read -r msg; do
     #  --- shellcheck disable=SC2210
