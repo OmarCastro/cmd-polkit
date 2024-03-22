@@ -1,4 +1,4 @@
-project('cmd-polkit', 'c', version : '0.3.0')
+project('cmd-polkit', 'c', version : '0.1.0')
 
 prefix = get_option('prefix')
 libexecdir = join_paths(prefix, get_option('libexecdir'))
@@ -33,6 +33,7 @@ test_sources = [
   'test/gtk.mock.c',
   'test/error-message.mock.c',
   'test/test.entrypoint.c',
+  'test/polkit-auth-handler.service.mock',
 ]
 
 test_sources += common_sources
