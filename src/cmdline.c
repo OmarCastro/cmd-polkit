@@ -24,9 +24,9 @@
 
 #include "cmdline.h"
 
-const char *gengetopt_args_info_purpose = "Does something useful.";
+const char *gengetopt_args_info_purpose = "A tool that allows to easily customize the UI used to authenticate on polkit";
 
-const char *gengetopt_args_info_usage = "Usage: myApp -s|--serial|-p|parallel -c|--command COMMAND";
+const char *gengetopt_args_info_usage = "Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND";
 
 const char *gengetopt_args_info_versiontext = "";
 

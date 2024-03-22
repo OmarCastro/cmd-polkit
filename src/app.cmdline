@@ -1,7 +1,7 @@
 version "0.1"
-package "myApp"
-purpose "Does something useful."
-usage "myApp -s|--serial|-p|parallel -c|--command COMMAND"
+package "cmd-polkit-agent"
+purpose "A tool that allows to easily customize the UI used to authenticate on polkit"
+usage "cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND"
 
 # Options
 option "command" c "Command to execute on authorization request" typestr="COMMAND" string optional

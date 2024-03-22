@@ -21,12 +21,12 @@ extern "C" {
 
 #ifndef CMDLINE_PARSER_PACKAGE
 /** @brief the program name (used for printing errors) */
-#define CMDLINE_PARSER_PACKAGE "myApp"
+#define CMDLINE_PARSER_PACKAGE "cmd-polkit-agent"
 #endif
 
 #ifndef CMDLINE_PARSER_PACKAGE_NAME
 /** @brief the complete program name (used for help and version) */
-#define CMDLINE_PARSER_PACKAGE_NAME "myApp"
+#define CMDLINE_PARSER_PACKAGE_NAME "cmd-polkit-agent"
 #endif
 
 #ifndef CMDLINE_PARSER_VERSION
