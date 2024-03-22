@@ -68,7 +68,6 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
             return;
         }
         log__verbose__writing_to_command_stdin(format_result);
-        g_debug("sending event: %s", format_result);
         gsize bytes_witten;
         g_io_channel_write_chars(write_channel, format_result, -1, &bytes_witten, &data->error);
         g_io_channel_write_unichar(write_channel, '\n', &data->error);
@@ -197,12 +196,12 @@ static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req, 
 static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
 {
 
-      log__verbose__polkit_session_show_error(text);
+    log__verbose__polkit_session_show_error(text);
 }
 
 static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
 {
-  log__verbose__polkit_session_show_info(text);
+    log__verbose__polkit_session_show_info(text);
 }
 
 static void init_session(AuthDlgData *d){
