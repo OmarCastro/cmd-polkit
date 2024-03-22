@@ -100,6 +100,22 @@ void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const G
     }
 }
 
+void log__verbose__polkit_auth_details(MACRO__SOURCE_LOCATION_PARAMS, PolkitDetails* const details){
+  CHECK_VERBOSE()
+  UPDATE_CURRENT_SOURCE_LOCATION()
+  char** key = polkit_details_get_keys(details);
+
+  log__verbose_raw("Polkit details");
+  if (key == NULL || !*key) { 
+    log__verbose_raw("└─ (empty)");
+    return; 
+  }
+  for(;*key;key++) {
+      log__verbose_formatted("└─ %s: %s", *key, polkit_details_lookup(details, *key));
+  }
+}
+
+
 void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled){
   CHECK_VERBOSE()
   UPDATE_CURRENT_SOURCE_LOCATION()

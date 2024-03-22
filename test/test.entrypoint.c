@@ -11,6 +11,7 @@
 #include "../src/accepted-actions.enum.h"
 #include "../src/json-glib.extension.h"
 #include "error-message.mock.h"
+#include "polkit-auth-handler.service.mock.h"
 
 
 typedef struct {
@@ -19,7 +20,7 @@ typedef struct {
 
 // mock
 const char*  app__get_cmd_line(){
-  return "command test";
+  return "./assets/test_response_command.sh";
 }
 
 Application app_get(){
@@ -123,6 +124,31 @@ Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\"
 	g_list_free(list);
 }
 
+
+
+static void test_log_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	g_autoptr(PolkitDetails) details = polkit_details_new();
+	log__verbose__polkit_auth_details(details);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_empty_polkit_details:Polkit details\n\
+Vrbos:test_log_empty_polkit_details:└─ (empty)\n\
+");
+}
+
+static void test_log_non_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	g_autoptr(PolkitDetails) details = polkit_details_new();
+	polkit_details_insert(details, "key 1", "value");
+	polkit_details_insert(details, "lorem", "ipsum");
+	log__verbose__polkit_auth_details(details);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_non_empty_polkit_details:Polkit details\n\
+Vrbos:test_log_non_empty_polkit_details:└─ key 1: value\n\
+Vrbos:test_log_non_empty_polkit_details:└─ lorem: ipsum\n\
+");
+}
+
 static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions (Fixture *fixture, gconstpointer user_data) {
 	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
 	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
@@ -221,6 +247,8 @@ int main (int argc, char *argv[]) {
 	test ("/ logger / silenced level logs nothing", test_silenced_logs);
 	test ("/ logger / polkit authentication identity information is logged as json", test_log_polkit_auth_identities);
 	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
+	test ("/ logger / empty policy kit details is shown as empty", test_log_empty_polkit_details);
+	test ("/ logger / non-empty policy kit details is shown with key: value pairs", test_log_non_empty_polkit_details);
 	test ("/ accepted actions / accepted_action_value_of_str returns expected value on valid action", test_accepted_action_value_of_str_returns_expected_values_on_valid_actions);
 	test ("/ accepted actions / accepted_action_value_of_str returns UNKNOWN on invalid action", test_accepted_action_value_of_str_returns_unknown_on_invalid_actions);
 	test ("/ accepted actions / accepted_action_value_of_str is case sensitive", test_accepted_action_value_of_str_is_case_sensitive);

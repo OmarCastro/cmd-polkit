@@ -241,15 +241,9 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 
 	log__verbose__init_polkit_authentication(action_id, message, icon_name, cookie);
 	log__verbose__polkit_auth_identities(identities);
-
+	log__verbose__polkit_auth_details(details);
 
 	AuthDlgData *d = g_slice_new0(AuthDlgData);
-
-	char** p;
-
-	for(p = polkit_details_get_keys(details); *p; ++p)
-		g_debug("initiate_authentication: %s: %s", *p, polkit_details_lookup(details, *p));
-
 	d->task = g_task_new(listener, cancellable, callback, user_data);
 	d->cancellable = cancellable;
     d->action_id = g_strdup(action_id);
