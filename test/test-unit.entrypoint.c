@@ -128,17 +128,18 @@ Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\"
 
 static void test_log_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
-	g_autoptr(PolkitDetails) details = polkit_details_new();
+	PolkitDetails* details = polkit_details_new();
 	log__verbose__polkit_auth_details(details);
 	g_assert_cmpstr(get_stdout()->str, ==, "\
 Vrbos:test_log_empty_polkit_details:Polkit details\n\
 Vrbos:test_log_empty_polkit_details:└─ (empty)\n\
 ");
+	g_object_unref(details);
 }
 
 static void test_log_non_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
-	g_autoptr(PolkitDetails) details = polkit_details_new();
+	PolkitDetails* details = polkit_details_new();
 	polkit_details_insert(details, "key 1", "value");
 	polkit_details_insert(details, "lorem", "ipsum");
 	log__verbose__polkit_auth_details(details);
@@ -147,6 +148,7 @@ Vrbos:test_log_non_empty_polkit_details:Polkit details\n\
 Vrbos:test_log_non_empty_polkit_details:└─ key 1: value\n\
 Vrbos:test_log_non_empty_polkit_details:└─ lorem: ipsum\n\
 ");
+	g_object_unref(details);
 }
 
 static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions (Fixture *fixture, gconstpointer user_data) {
