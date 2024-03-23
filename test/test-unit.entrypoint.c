@@ -20,7 +20,7 @@ typedef struct {
 
 // mock
 const char*  app__get_cmd_line(){
-  return "./assets/test_response_command.sh";
+  return "bash ./assets/test_response_command.sh";
 }
 
 Application app_get(){
@@ -227,15 +227,10 @@ static void test_error_message_dialog_runs_gtk_dialog (Fixture *fixture, gconstp
 	g_assert_true(called_times_gtk_init() == 1);
 }
 
-void quitloop(gpointer data){
-	g_main_loop_quit( data );
-}
-
-static void test_main_loop (Fixture *fixture, gconstpointer user_data) {
-	GMainLoop *    loop = g_main_loop_new (NULL, FALSE);
-	g_idle_add_once(quitloop, loop);
-    g_main_loop_run (loop);
-    g_main_loop_unref (loop);
+static void test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init (Fixture *fixture, gconstpointer user_data) {
+	PolkitAgentListener* listener = cmd_pk_agent_polkit_listener_new();
+	g_object_unref(listener);
+	// if there is no error, this passes
 }
 
 
@@ -266,7 +261,7 @@ int main (int argc, char *argv[]) {
 	test ("/ json glib extensions / json_object_get_string_member_or_else returns string value or else value if not a string", test_json_node_get_string_member_or_else);
 	test ("/ error message dialog / lazy gtk init inits gtk once", test_error_message_dialog_inits_once);
 	test ("/ error message dialog / show message runs gtk dialog", test_error_message_dialog_runs_gtk_dialog);
-	test ("/ main loop / quick loop exit check to run tests ahead", test_main_loop);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListenerClass initialization", test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init);
 
 	#undef test
 	return g_test_run ();

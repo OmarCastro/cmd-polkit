@@ -31,28 +31,40 @@ main_sources += common_sources
 test_sources = [
   'test/logger.mock.c',
   'test/gtk.mock.c',
+  'test/polkit.mock.c',
   'test/error-message.mock.c',
-  'test/test.entrypoint.c',
   'test/polkit-auth-handler.service.mock.c',
-]
+] + common_sources
 
-test_sources += common_sources
+test_unit_sources            = [ 'test/test-unit.entrypoint.c' ] + test_sources
+test_it_command_exec_sources = [ 'test/test-it-command-exec.entrypoint.c' ] + test_sources
 
-sources = files(main_sources)
-
-executable('cmd-polkit-agent', sources,
+executable('cmd-polkit-agent', main_sources,
   dependencies: deps,
   install: true,
 )
 
 test(
   'test-suite',
-  executable('cmd-polkit-agent-test', test_sources, dependencies: deps),
+  executable('cmd-polkit-agent-test', test_unit_sources, dependencies: deps),
   env: [
     'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
     'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
   ],
   protocol: 'tap',
-  workdir: join_paths(meson.current_source_dir(), 'test/assets')
+  workdir: join_paths(meson.current_source_dir(), 'test')
 )
+
+test(
+  'test-suite-it',
+  executable('cmd-polkit-agent-test-it-command-exec', test_it_command_exec_sources, dependencies: deps),
+  env: [
+    'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
+    'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+  ],
+  protocol: 'tap',
+  workdir: join_paths(meson.current_source_dir(), 'test')
+)
+
+
 
