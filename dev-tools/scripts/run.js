@@ -476,8 +476,8 @@ async function makeBadgeForCoverages (path) {
 }
 
 async function makeBadgeForTestResult (path) {
-  const json = await readFile(`${path}/testlog.json`).then(str => JSON.parse(str))
-  const tests = json.stdout.split('\n').filter(test => /^n?ok /.test(test) )
+  const stdout = await readFile(`${path}/testlog.json`).then(str => str.split("\n").map(line => line ? JSON.parse(line).stdout: "").join(''))
+  const tests = stdout.split('\n').filter(test => /^n?ok /.test(test) )
   const passedTests = tests.filter(test => test.startsWith('ok'))
   const testAmount = tests.length
   const passedAmount = passedTests.length
