@@ -8,10 +8,12 @@
 #include "error-message.mock.h"
 #include "polkit-auth-handler.service.mock.h"
 
-gboolean quit = FALSE;
 
 typedef struct {
-  int obj;
+  PolkitAgentListener* listener;
+  GList * identities;
+  PolkitDetails *details;
+  GMainLoop *loop;
 } Fixture;
 
 
@@ -29,59 +31,84 @@ Application app_get(){
   };
 }
 
-int quitloop(gpointer data){
-	printf("ok 1 / polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure testing \n");
-	quit = true;
+int quitloop(gpointer loop){
+	g_main_loop_quit(loop);
 	return G_SOURCE_REMOVE;
 
 }
 
-void prepare_to_exit(){
-	g_idle_add(quitloop, NULL);
+void prepare_to_exit(GObject *obj, GAsyncResult * result, gpointer loop){
+	g_idle_add(quitloop, loop);
 }
 
-static int test_polkit_auth_handler_authentication_aux (gpointer main_loop) {
-	PolkitAgentListener* listener = cmd_pk_agent_polkit_listener_new();
-	const gchar *action_id = g_strdup("org.freedesktop.policykit.exec");
-	const gchar *message = g_strdup("Authentication is needed to run `/usr/bin/echo 1' as the super user");
-	const gchar *icon_name = g_strdup("");
-	const gchar *cookie = g_strdup("3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2");
-	PolkitDetails* details = polkit_details_new();
-	PolkitIdentity * user = polkit_unix_user_new(1000);
-	GList *identities = NULL;
-	identities = g_list_append(identities, user);
+static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
+	Fixture *fixture = fixture_ptr;
+	fixture->listener = cmd_pk_agent_polkit_listener_new();
+	const gchar *action_id = "org.freedesktop.policykit.exec";
+	const gchar *message = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
+	const gchar *icon_name = "";
+	const gchar *cookie = "3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2";
+	fixture->details = polkit_details_new();
+	PolkitIdentity *user = polkit_unix_user_new(1000);
+	fixture->identities = g_list_append(fixture->identities, user);
 
-	POLKIT_AGENT_LISTENER_GET_CLASS(listener)->initiate_authentication(
-		listener,action_id,message,icon_name,details,cookie,identities,NULL,prepare_to_exit,NULL
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+		fixture->listener,
+		action_id,message,
+		icon_name,
+		fixture->details,
+		cookie,
+		fixture->identities,
+		NULL,
+		prepare_to_exit,
+		fixture->loop
 	);
+
 
 	return G_SOURCE_REMOVE;
 }
 
 
 static void test_polkit_auth_handler_authentication (Fixture *fixture, gconstpointer user_data) {
-	GMainLoop *loop = g_main_loop_new (NULL, FALSE);
-	g_idle_add(test_polkit_auth_handler_authentication_aux, loop);
-	GMainContext *context = g_main_context_default ();
-
-	/* Run the GLib event loop. */
-	while (!quit) {
-		g_main_context_iteration (context, TRUE);
-	}
-	g_main_loop_unref(loop);
+	fixture->loop = g_main_loop_new (NULL, FALSE);
+	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
+	g_main_loop_run(fixture->loop);
 }
 
 
+static void test_set_up (Fixture *fixture, gconstpointer user_data){
 
-#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
+}
+
+static void test_tear_down (Fixture *fixture, gconstpointer user_data){
+	if(fixture->listener != NULL){
+		g_object_unref(fixture->listener);
+		fixture->listener = NULL;
+	}
+	if(fixture->identities != NULL){
+		g_list_free_full(fixture->identities, g_object_unref);
+		fixture->identities = NULL;
+	}
+	if(fixture->details != NULL){
+		g_object_unref(fixture->details);
+		fixture->details = NULL;
+	}
+	g_main_loop_unref(fixture->loop);
+
+}
+
 
 int main (int argc, char *argv[]) {
 
     setlocale (LC_ALL, "");
 
-	printf("TAP version 13\n");
-	printf("1..1\n");
+    g_test_init (&argc, &argv, NULL);
 
+	#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
-    test_polkit_auth_handler_authentication(NULL, NULL);
+    // Define the tests.
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure testing", test_polkit_auth_handler_authentication);
+
+	#undef test
+	return g_test_run ();
 }

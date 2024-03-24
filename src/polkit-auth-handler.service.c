@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2024 Omar Castro
+#include <stdbool.h>
 #define _GNU_SOURCE
 #include <grp.h>
 #include <pwd.h>
@@ -89,11 +90,16 @@ static void auth_dlg_data_free(AuthDlgData *d)
         fprintf(stderr, "error closing write channel of pid %d: %s\n", d->cmd_pid, error->message);
         g_error_free ( error );
     }
+    g_io_channel_unref(d->write_channel);
     g_io_channel_shutdown(d->read_channel, FALSE, &error);
     if(error){
         fprintf(stderr, "error closing read channel of pid %d: %s\n", d->cmd_pid, error->message);
         g_error_free ( error );
     }
+    g_io_channel_unref(d->read_channel);
+    g_string_free(d->active_line, true);
+    g_string_free(d->buffer, true);
+    g_object_unref(d->parser);
 	g_slice_free(AuthDlgData, d);
 }
 

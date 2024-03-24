@@ -4,6 +4,8 @@ cd ..
 
 meson setup build-test -Db_coverage=true || exit 1
 meson compile -C build-test || exit 1
-meson test -C build-test
+meson test --wrap='valgrind --leak-check=full' -C build-test
 ninja coverage -C build-test
+ls build-test/meson-logs/testlog.json || cp build-test/meson-logs/testlog-valgrind.json build-test/meson-logs/testlog.json 
+ls build-test/meson-logs/testlog.txt || cp build-test/meson-logs/testlog-valgrind.txt build-test/meson-logs/testlog.txt 
 dev-tools/run docs
