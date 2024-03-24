@@ -77,6 +77,7 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
 static void auth_dlg_data_free(AuthDlgData *d)
 {
 	g_signal_handlers_disconnect_by_func(d->cancellable, on_cancelled, d);
+    GError* error = NULL;
 
 	g_object_unref(d->task);
 	g_object_unref(d->session);
@@ -84,6 +85,17 @@ static void auth_dlg_data_free(AuthDlgData *d)
     g_free(d->cookie);
     g_free(d->message);
 	g_list_free(d->identities);
+    g_source_remove (d->read_channel_watcher);
+    g_io_channel_shutdown(d->write_channel, TRUE, &error);
+    if(error){
+        fprintf(stderr, "error closing write channel of pid %d: %s\n", d->cmd_pid, error->message);
+        g_error_free ( error );
+    }
+    g_io_channel_shutdown(d->read_channel, FALSE, &error);
+    if(error){
+        fprintf(stderr, "error closing read channel of pid %d: %s\n", d->cmd_pid, error->message);
+        g_error_free ( error );
+    }
 	g_slice_free(AuthDlgData, d);
 }
 
@@ -131,8 +143,7 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
                 fprintf(stderr, "no action defined, ignored");
             } else switch (accepted_action_value_of_str(action)) {
                 case AcceptedAction_CANCEL: {
-                                    fprintf(stderr, "action cancel");
-
+                    fprintf(stderr, "action cancel");
                     g_cancellable_cancel(data->cancellable);
                     polkit_agent_session_cancel(data->session);
                 }
