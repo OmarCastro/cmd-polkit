@@ -57,7 +57,6 @@ struct _AuthDlgData {
 
 };
 
-static void on_cancelled(GCancellable* cancellable, AuthDlgData* d);
 static void init_session(AuthDlgData *d);
 
 
@@ -76,7 +75,6 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
 
 static void auth_dlg_data_free(AuthDlgData *d)
 {
-	g_signal_handlers_disconnect_by_func(d->cancellable, on_cancelled, d);
     GError* error = NULL;
 
 	g_object_unref(d->task);
@@ -164,16 +162,6 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
 
     return G_SOURCE_CONTINUE;
 }
-
-static void on_cancelled(GCancellable* UNUSED(cancellable), AuthDlgData *d)
-{
-    if (d->session) {
-		polkit_agent_session_cancel(d->session);
-    } else{
-		auth_dlg_data_free(d);
-    }
-}
-
 
 static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean authorized, AuthDlgData* d)
 { 
