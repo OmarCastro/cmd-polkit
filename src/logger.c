@@ -103,16 +103,17 @@ void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const G
 void log__verbose__polkit_auth_details(MACRO__SOURCE_LOCATION_PARAMS, PolkitDetails* const details){
   CHECK_VERBOSE()
   UPDATE_CURRENT_SOURCE_LOCATION()
-  char** key = polkit_details_get_keys(details);
+  char** keys = polkit_details_get_keys(details);
 
   log__verbose_raw("Polkit details");
-  if (key == NULL || !*key) { 
+  if (keys == NULL) { 
     log__verbose_raw("└─ (empty)");
     return; 
   }
-  for(;*key;key++) {
+  for(char** key = keys;*key;key++) {
       log__verbose_formatted("└─ %s: %s", *key, polkit_details_lookup(details, *key));
   }
+  g_strfreev(keys);
 }
 
 
