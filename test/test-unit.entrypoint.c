@@ -97,16 +97,19 @@ static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer use
 	log__verbose();
 	PolkitIdentity * user = polkit_unix_user_new(0);
 	PolkitIdentity * group = polkit_unix_group_new(0);
+	PolkitIdentity *  netgroup = polkit_unix_netgroup_new("testgroup");
 	GList *list = NULL;
 	list = g_list_append(list, user);
 	list = g_list_append(list, group);
+	list = g_list_append(list, netgroup);
 	log__verbose__polkit_auth_identities(list);
 	g_assert_cmpstr(get_stdout()->str, ==, "\
 Vrbos:test_log_polkit_auth_identities:Polkit identities\n\
 Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
 Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
+Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"other\",\"value\":\"unix-netgroup:testgroup\"}\n\
 ");
-	g_list_free(list);
+	g_list_free_full(list, g_object_unref);
 }
 
 static void test_log_invalid_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
