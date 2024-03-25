@@ -71,7 +71,8 @@ void log__verbose__init_polkit_listener(MACRO__SOURCE_LOCATION_PARAMS){
   log__verbose_raw("Polkit Listener initialized");
 }
 
-void log__verbose__finalize_polkit_listener(){
+void log__verbose__finalize_polkit_listener(MACRO__SOURCE_LOCATION_PARAMS){
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_raw("Polkit Listener finalized");
 }
 
@@ -131,30 +132,36 @@ void log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_PARAMS, cons
 }
 
 
-void log__verbose__polkit_session_show_info(const char *text){
+void log__verbose__polkit_session_show_info(MACRO__SOURCE_LOCATION_PARAMS, const char *text){
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_formatted("Polkit session show info: %s", text);
 }
 
 
-void log__verbose__polkit_session_request(const char *text, bool visibility){
+void log__verbose__polkit_session_request(MACRO__SOURCE_LOCATION_PARAMS, const char *text, bool visibility){
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_formatted("Polkit session request: %s", text);
   log__verbose_formatted("└- visibility: %s", visibility ? "yes" : "no");
 
 }
 
-void log__verbose__finish_polkit_authentication(){
+void log__verbose__finish_polkit_authentication(MACRO__SOURCE_LOCATION_PARAMS){
+  UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_raw("finish Polkit authentication");
 }
 
-void log__verbose__writing_to_command_stdin(const char * message){
+void log__verbose__writing_to_command_stdin(MACRO__SOURCE_LOCATION_PARAMS, const char * message){
+    UPDATE_CURRENT_SOURCE_LOCATION()
     log__verbose_formatted("writing to command stdin: %s", message);
 }
 
-void log__verbose__received_from_command_stdout(const char * message){
+void log__verbose__received_from_command_stdout(MACRO__SOURCE_LOCATION_PARAMS, const char * message){
+    UPDATE_CURRENT_SOURCE_LOCATION()
     log__verbose_formatted("received line from command stdout: %s", message);
 }
 
-void log__verbose__reading_command_stdout(){
+void log__verbose__reading_command_stdout(MACRO__SOURCE_LOCATION_PARAMS){
+    UPDATE_CURRENT_SOURCE_LOCATION()
     log__verbose_formatted("reading output");
 }
 
