@@ -125,6 +125,7 @@ Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\"
 Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\":\"invalid type: not a polkit identity\"}\n\
 ");
 	g_list_free(list);
+	g_list_free(invalidTypeObject);
 }
 
 
