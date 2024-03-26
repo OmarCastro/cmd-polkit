@@ -92,7 +92,22 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 	g_assert_cmpstr(get_stderr()->str, ==, "");
 }
 
+static void test_log_verbose_init_polkit_authentication (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	const gchar *action_id = "org.freedesktop.policykit.exec";
+	const gchar *message = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
+	const gchar *icon_name = "";
+	const gchar *cookie = "3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2";
 
+	log__verbose__init_polkit_authentication(action_id, message, icon_name, cookie);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_verbose_init_polkit_authentication:initiate Polkit authentication\n\
+Vrbos:test_log_verbose_init_polkit_authentication:└─ action id : org.freedesktop.policykit.exec\n\
+Vrbos:test_log_verbose_init_polkit_authentication:└─ message   : Authentication is needed to run `/usr/bin/echo 1' as the super user\n\
+Vrbos:test_log_verbose_init_polkit_authentication:└─ icon name : \n\
+Vrbos:test_log_verbose_init_polkit_authentication:└─ cookie    : 3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2\n\
+");
+}
 
 static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
@@ -257,6 +272,7 @@ int main (int argc, char *argv[]) {
     test ("/ request messages / request message request password is escaped correctly", test_request_message_request_password_is_escaped_correctly);
     test ("/ logger / default level logs failure and normal logs", test_default_logs);
 	test ("/ logger / silenced level logs nothing", test_silenced_logs);
+	test ("/ logger / polkit authentication logs", test_log_verbose_init_polkit_authentication);
 	test ("/ logger / polkit authentication identity information is logged as json", test_log_polkit_auth_identities);
 	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
 	test ("/ logger / empty policy kit details is shown as empty", test_log_empty_polkit_details);
