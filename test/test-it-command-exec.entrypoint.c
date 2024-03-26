@@ -16,10 +16,12 @@ typedef struct {
   GMainLoop *loop;
 } Fixture;
 
+char *current_cmd_line = "bash ./assets/test_response_command.sh";
+
 
 // mock
 const char*  app__get_cmd_line(){
-  return "bash ./assets/test_response_command.sh";
+  return current_cmd_line;
 }
 
 Application app_get(){
@@ -69,7 +71,15 @@ static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 }
 
 
-static void test_polkit_auth_handler_authentication (Fixture *fixture, gconstpointer user_data) {
+static void test_polkit_auth_handler_authentication_success (Fixture *fixture, gconstpointer user_data) {
+	current_cmd_line = "bash ./assets/test_response_command.sh";
+	fixture->loop = g_main_loop_new (NULL, FALSE);
+	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
+	g_main_loop_run(fixture->loop);
+}
+
+static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, gconstpointer user_data) {
+	current_cmd_line = "bash ./assets/test_response_cancel.sh";
 	fixture->loop = g_main_loop_new (NULL, FALSE);
 	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
 	g_main_loop_run(fixture->loop);
@@ -107,7 +117,8 @@ int main (int argc, char *argv[]) {
 	#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
     // Define the tests.
-	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure testing", test_polkit_auth_handler_authentication);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure success testing", test_polkit_auth_handler_authentication_success);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure cancel testing", test_polkit_auth_handler_authentication_cancel);
 
 	#undef test
 	return g_test_run ();
