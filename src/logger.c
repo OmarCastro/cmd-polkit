@@ -91,13 +91,11 @@ const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity);
 void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const GList* const identities){
   CHECK_VERBOSE()
   UPDATE_CURRENT_SOURCE_LOCATION()
-  const GList *p;
-
   log__verbose_raw("Polkit identities");
-  for (p = identities; p != NULL; p = p->next) {
+  for (const GList *p = identities; p != NULL; p = p->next) {
       PolkitIdentity *id = (PolkitIdentity *)p->data;
       g_autofree const gchar* json = polkit_auth_identity_to_json_string(id);
-      log__verbose_formatted("└- %s", json);
+      log__verbose_formatted("└─ %s", json);
     }
 }
 
@@ -122,7 +120,7 @@ void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool 
   CHECK_VERBOSE()
   UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_raw("Polkit session completed");
-  log__verbose_formatted("└- {\"authorized\": \"%s\", \"canceled\":\"%s\" })", authorized ? "yes": "no", canceled ? "yes": "no");
+  log__verbose_formatted("└─ {\"authorized\": \"%s\", \"canceled\":\"%s\" })", authorized ? "yes": "no", canceled ? "yes": "no");
 }
 
 void log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_PARAMS, const char *text){
@@ -141,7 +139,7 @@ void log__verbose__polkit_session_show_info(MACRO__SOURCE_LOCATION_PARAMS, const
 void log__verbose__polkit_session_request(MACRO__SOURCE_LOCATION_PARAMS, const char *text, bool visibility){
   UPDATE_CURRENT_SOURCE_LOCATION()
   log__verbose_formatted("Polkit session request: %s", text);
-  log__verbose_formatted("└- visibility: %s", visibility ? "yes" : "no");
+  log__verbose_formatted("└─ visibility: %s", visibility ? "yes" : "no");
 
 }
 

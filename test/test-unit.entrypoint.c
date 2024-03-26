@@ -93,6 +93,7 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 }
 
 
+
 static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
 	PolkitIdentity * user = polkit_unix_user_new(0);
@@ -105,9 +106,9 @@ static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer use
 	log__verbose__polkit_auth_identities(list);
 	g_assert_cmpstr(get_stdout()->str, ==, "\
 Vrbos:test_log_polkit_auth_identities:Polkit identities\n\
-Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
-Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
-Vrbos:test_log_polkit_auth_identities:└- {\"type\":\"other\",\"value\":\"unix-netgroup:testgroup\"}\n\
+Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
+Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
+Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"other\",\"value\":\"unix-netgroup:testgroup\"}\n\
 ");
 	g_list_free_full(list, g_object_unref);
 }
@@ -121,8 +122,8 @@ static void test_log_invalid_polkit_auth_identities (Fixture *fixture, gconstpoi
 	log__verbose__polkit_auth_identities(list);
 	g_assert_cmpstr(get_stdout()->str, ==, "\
 Vrbos:test_log_invalid_polkit_auth_identities:Polkit identities\n\
-Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\":\"identity is null\"}\n\
-Vrbos:test_log_invalid_polkit_auth_identities:└- {\"type\":\"error\",\"error\":\"invalid type: not a polkit identity\"}\n\
+Vrbos:test_log_invalid_polkit_auth_identities:└─ {\"type\":\"error\",\"error\":\"identity is null\"}\n\
+Vrbos:test_log_invalid_polkit_auth_identities:└─ {\"type\":\"error\",\"error\":\"invalid type: not a polkit identity\"}\n\
 ");
 	g_list_free(list);
 	g_list_free(invalidTypeObject);
