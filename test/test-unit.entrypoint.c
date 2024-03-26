@@ -80,7 +80,9 @@ static void test_default_logs (Fixture *fixture, gconstpointer user_data) {
 	g_assert_cmpstr(get_stderr()->str, ==, "\
 Error: command argument is required\n\
 Error: Only parallel or serial must be selected, not both\n\
-Error: Parallel or serial option are required\n");
+Error: Parallel or serial option are required\n\
+");
+	g_assert_cmpstr(get_stdout()->str, ==, "<mock help message>\n");
 }
 
 static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
@@ -90,7 +92,45 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 	log__fail_cmdline__parallel_or_series_required();
 	log__verbose__cmd_and_mode();
 	g_assert_cmpstr(get_stderr()->str, ==, "");
+	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
+
+static void test_verbose_logs (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	log__fail_cmdline__command_required();
+	log__fail_cmdline__either_parallel_or_series();
+	log__fail_cmdline__parallel_or_series_required();
+	log__verbose__cmd_and_mode();
+	log__verbose__polkit_session_show_error("test");
+	log__verbose__writing_to_command_stdin("{\"content\":\"test\"}");
+	log__verbose__received_from_command_stdout("{\"content\":\"test\"}");
+	log__verbose__reading_command_stdout();
+	log__verbose__finish_polkit_authentication();
+	log__verbose__polkit_session_show_info("<Polkit info>");
+	log__verbose__polkit_session_request("Password:", true);
+	log__verbose__polkit_session_request("Password:", false);
+	g_assert_cmpstr(get_stderr()->str, ==, "\
+Error: command argument is required\n\
+Error: Only parallel or serial must be selected, not both\n\
+Error: Parallel or serial option are required\n\
+");
+	g_assert_cmpstr(get_stdout()->str, ==, "<mock help message>\n\
+Vrbos:test_verbose_logs:COMMAND TO EXECUTE: bash ./assets/test_response_command.sh\n\
+Vrbos:test_verbose_logs:AUTH HANDLING MODE: PARALLEL\n\
+Vrbos:test_verbose_logs:Polkit session show error: test\n\
+Vrbos:test_verbose_logs:writing to command stdin: {\"content\":\"test\"}\n\
+Vrbos:test_verbose_logs:received line from command stdout: {\"content\":\"test\"}\n\
+Vrbos:test_verbose_logs:reading output\n\
+Vrbos:test_verbose_logs:finish Polkit authentication\n\
+Vrbos:test_verbose_logs:Polkit session show info: <Polkit info>\n\
+Vrbos:test_verbose_logs:Polkit session request: Password:\n\
+Vrbos:test_verbose_logs:└─ visibility: yes\n\
+Vrbos:test_verbose_logs:Polkit session request: Password:\n\
+Vrbos:test_verbose_logs:└─ visibility: no\n\
+");
+}
+
+
 
 static void test_log_verbose_init_polkit_authentication (Fixture *fixture, gconstpointer user_data) {
 	log__verbose();
@@ -290,6 +330,7 @@ int main (int argc, char *argv[]) {
     test ("/ request messages / request message request password is escaped correctly", test_request_message_request_password_is_escaped_correctly);
     test ("/ logger / default level logs failure and normal logs", test_default_logs);
 	test ("/ logger / silenced level logs nothing", test_silenced_logs);
+	test ("/ logger / verbose level logs all logs", test_verbose_logs);
 	test ("/ logger / polkit authentication logs", test_log_verbose_init_polkit_authentication);
 	test ("/ logger / polkit authentication identity information is logged as json", test_log_polkit_auth_identities);
 	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
