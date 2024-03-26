@@ -226,11 +226,13 @@ const gchar * polkit_auth_identity_to_json_string(PolkitIdentity * identity){
       json_builder_set_member_name (builder, "id");
       json_builder_add_int_value (builder, grp->gr_gid);
     } else if(POLKIT_IS_IDENTITY(identity)){
+      g_autofree gchar* value = polkit_identity_to_string(identity);
+      
       json_builder_set_member_name (builder, "type");
       json_builder_add_string_value (builder, "other");
 
       json_builder_set_member_name (builder, "value");
-      json_builder_add_string_value (builder, polkit_identity_to_string(identity));
+      json_builder_add_string_value (builder, value);
     } else {
       json_builder_set_member_name (builder, "type");
       json_builder_add_string_value (builder, "error");
