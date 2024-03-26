@@ -171,6 +171,24 @@ Vrbos:test_log_non_empty_polkit_details:└─ lorem: ipsum\n\
 	g_object_unref(details);
 }
 
+static void test_log_polkit_session_completed (Fixture *fixture, gconstpointer user_data) {
+	log__verbose();
+	log__verbose__polkit_session_completed(false, false);
+	log__verbose__polkit_session_completed(false, true);
+	log__verbose__polkit_session_completed(true, false);
+	log__verbose__polkit_session_completed(true, true);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_polkit_session_completed:Polkit session completed\n\
+Vrbos:test_log_polkit_session_completed:└─ {\"authorized\": \"no\", \"canceled\":\"no\" })\n\
+Vrbos:test_log_polkit_session_completed:Polkit session completed\n\
+Vrbos:test_log_polkit_session_completed:└─ {\"authorized\": \"no\", \"canceled\":\"yes\" })\n\
+Vrbos:test_log_polkit_session_completed:Polkit session completed\n\
+Vrbos:test_log_polkit_session_completed:└─ {\"authorized\": \"yes\", \"canceled\":\"no\" })\n\
+Vrbos:test_log_polkit_session_completed:Polkit session completed\\
+nVrbos:test_log_polkit_session_completed:└─ {\"authorized\": \"yes\", \"canceled\":\"yes\" })\n\
+");
+}
+
 static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions (Fixture *fixture, gconstpointer user_data) {
 	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
 	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
@@ -277,6 +295,7 @@ int main (int argc, char *argv[]) {
 	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
 	test ("/ logger / empty policy kit details is shown as empty", test_log_empty_polkit_details);
 	test ("/ logger / non-empty policy kit details is shown with key: value pairs", test_log_non_empty_polkit_details);
+	test ("/ logger / log_polkit_session_completed logs session information", test_log_polkit_session_completed);
 	test ("/ accepted actions / accepted_action_value_of_str returns expected value on valid action", test_accepted_action_value_of_str_returns_expected_values_on_valid_actions);
 	test ("/ accepted actions / accepted_action_value_of_str returns UNKNOWN on invalid action", test_accepted_action_value_of_str_returns_unknown_on_invalid_actions);
 	test ("/ accepted actions / accepted_action_value_of_str is case sensitive", test_accepted_action_value_of_str_is_case_sensitive);
