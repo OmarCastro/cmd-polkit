@@ -29,7 +29,11 @@
 
 G_DEFINE_TYPE(CmdPkAgentPolkitListener, cmd_pk_agent_polkit_listener, POLKIT_AGENT_TYPE_LISTENER)
 
-
+typedef enum {
+    AUTHENTICATING,
+    CANCELED,
+    AUTHORIZED
+} AuthDlgDataStatus;
 
 typedef struct _AuthDlgData AuthDlgData;
 struct _AuthDlgData {
@@ -37,11 +41,11 @@ struct _AuthDlgData {
 	gchar *action_id;
     gchar *cookie;
     gchar *message;
-    GCancellable* cancellable;
 	GTask* task;
 	GList *identities;
     GError *error;
 
+    AuthDlgDataStatus status;
 
     GPid cmd_pid;
     int write_channel_fd;
@@ -74,11 +78,20 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
         g_io_channel_flush(write_channel, &data->error);
 }
 
+static void auth_dlg_data_run_and_free_task(AuthDlgData *d, gboolean result){
+    GTask *task = d->task;
+    if(task != NULL){
+		g_task_return_boolean(task, result);
+        g_object_unref(task);
+        d->task = NULL;
+    }
+}
+
 static void auth_dlg_data_free(AuthDlgData *d)
 {
     GError* error = NULL;
 
-	g_object_unref(d->task);
+    auth_dlg_data_run_and_free_task(d, false);
 	g_object_unref(d->session);
 	g_free(d->action_id);
     g_free(d->cookie);
@@ -148,7 +161,7 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
             } else switch (accepted_action_value_of_str(action)) {
                 case AcceptedAction_CANCEL: {
                     fprintf(stderr, "action cancel");
-                    g_cancellable_cancel(data->cancellable);
+                    data->status = CANCELED;
                     polkit_agent_session_cancel(data->session);
                 }
                 break;
@@ -171,15 +184,16 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
 
 static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean authorized, AuthDlgData* d)
 { 
-    bool canceled = g_cancellable_is_cancelled(d->cancellable);
+    bool canceled = d->status == CANCELED;
     log__verbose__polkit_session_completed(authorized, canceled);
 
     if(authorized){
+        d->status = AUTHORIZED;
         g_autofree const char* message = request_message_authorization_authorized();
         blocks_mode_private_data_write_to_channel(d, message);
     }
     if (authorized || canceled) {
-		g_task_return_pointer(d->task, NULL, NULL);
+		auth_dlg_data_run_and_free_task(d, authorized);
 		auth_dlg_data_free(d);
 		return;
 	}
@@ -249,8 +263,8 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 	log__verbose__polkit_auth_details(details);
 
 	AuthDlgData *d = g_slice_new0(AuthDlgData);
+
 	d->task = g_task_new(listener, cancellable, callback, user_data);
-	d->cancellable = cancellable;
     d->action_id = g_strdup(action_id);
     d->message = g_strdup(message);
     d->cookie = g_strdup(cookie);
@@ -258,6 +272,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     d->buffer = g_string_sized_new (1024);
     d->active_line = g_string_sized_new (1024);
     d->parser = json_parser_new ();
+    d->status = AUTHENTICATING;
     init_session(d);
 
 
@@ -275,9 +290,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 
 
     if ( ! g_spawn_async_with_pipes ( NULL, cmd_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &(d->cmd_pid), &(cmd_input_fd), &(cmd_output_fd), NULL, &error)) {
-    
         show_error_message_format("%s", error->message);
-        g_cancellable_cancel(d->cancellable);
         polkit_agent_session_cancel(d->session);
     } else {
         d->read_channel_fd = cmd_output_fd;
