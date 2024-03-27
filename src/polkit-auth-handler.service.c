@@ -224,7 +224,7 @@ static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *tex
 }
 
 static void init_session(AuthDlgData *d){
-  if (d->session) {
+  if (G_UNLIKELY(d->session)) {
           g_signal_handlers_disconnect_matched(d->session, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, d);
           polkit_agent_session_cancel(d->session);
           g_object_unref(d->session);
