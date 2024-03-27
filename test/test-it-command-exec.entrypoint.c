@@ -85,6 +85,13 @@ static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, gc
 	g_main_loop_run(fixture->loop);
 }
 
+static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture, gconstpointer user_data) {
+	current_cmd_line = "bash ./assets/test_response_fail_retry.sh";
+	fixture->loop = g_main_loop_new (NULL, FALSE);
+	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
+	g_main_loop_run(fixture->loop);
+}
+
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){
 
@@ -119,6 +126,7 @@ int main (int argc, char *argv[]) {
     // Define the tests.
 	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure success testing", test_polkit_auth_handler_authentication_success);
 	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure cancel testing", test_polkit_auth_handler_authentication_cancel);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure fail retry testing", test_polkit_auth_handler_authentication_fail_retry);
 
 	#undef test
 	return g_test_run ();

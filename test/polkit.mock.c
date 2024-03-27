@@ -24,7 +24,12 @@ void mock_polkit_agent_session_cancel (PolkitAgentSession *session){
 }
 
 void mock_polkit_agent_session_response (PolkitAgentSession *session, const gchar *response){
-  g_idle_add(complete_success, session);
+  const gboolean authenticated = g_str_equal(response, "success");
+  if(authenticated){
+    g_idle_add(complete_success, session);
+  } else {
+    g_timeout_add(500, complete_error, session);
+  }
 }
 
 
