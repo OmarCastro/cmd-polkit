@@ -315,7 +315,7 @@ static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(liste
 				 GAsyncResult *res, GError **error)
 {
 	log__verbose__finish_polkit_authentication();
-	return !g_task_propagate_boolean(G_TASK(res), error);
+	return g_task_propagate_boolean(G_TASK(res), error);
 }
 
 static void cmd_pk_agent_polkit_listener_finalize(GObject *object)
