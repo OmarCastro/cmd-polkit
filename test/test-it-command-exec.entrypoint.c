@@ -33,14 +33,19 @@ Application app_get(){
   };
 }
 
-int quitloop(gpointer loop){
-	g_main_loop_quit(loop);
+int quitloop(gpointer fixture_ptr){
+	Fixture *fixture = fixture_ptr;
+	g_main_loop_quit(fixture->loop);
 	return G_SOURCE_REMOVE;
 
 }
 
-void prepare_to_exit(GObject *obj, GAsyncResult * result, gpointer loop){
-	g_idle_add(quitloop, loop);
+void finish_autentication_and_exit(GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
+	Fixture *fixture = fixture_ptr;
+	PolkitAgentListener *listener = fixture->listener;
+	GError *error = NULL;
+	POLKIT_AGENT_LISTENER_GET_CLASS (listener)->initiate_authentication_finish (listener, result, &error);
+	g_idle_add(quitloop, fixture);
 }
 
 static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
@@ -62,8 +67,8 @@ static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 		cookie,
 		fixture->identities,
 		NULL,
-		prepare_to_exit,
-		fixture->loop
+		finish_autentication_and_exit,
+		fixture
 	);
 
 
