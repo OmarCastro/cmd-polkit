@@ -24,6 +24,7 @@ main_sources = [
   'src/error-message.dialog.c',
   'src/cmdline.c',
   'src/logger.c',
+  'src/app.c',
 ]
 
 main_sources += common_sources

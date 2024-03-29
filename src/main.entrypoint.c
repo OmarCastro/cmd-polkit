@@ -3,105 +3,19 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include "polkit-auth-handler.service.h"
-#include "cmdline.h"
-#include "logger.h"
-#include "app.h"
+#include <glib.h>
+#include <stdio.h>
 #include "error-message.dialog.h"
 
-static bool runInSerie;
-static bool runInParallel;
-static bool runInSilence;
-static bool runInVerbose;
-static char *cmd_line = NULL;
-static int static_argc;
-static char ** static_argv;
-
-
-const char*  app__get_cmd_line(){
-  return cmd_line;
-}
-
-AuthHandlingMode app__get_auth_handling_mode(){
-  return runInParallel ? AuthHandlingMode_PARALLEL : AuthHandlingMode_SERIE;
-}
-
-
-Application app_get(){
-  return (Application){
-      .argc = static_argc ,
-      .argv = static_argv ,
-      .command_line = cmd_line ,
-      .handling_mode = runInParallel ? AuthHandlingMode_PARALLEL : AuthHandlingMode_SERIE
-  };
-}
 
 int main(int argc, char *argv[])
 {
-
-
-  static_argc = argc;
-  static_argv = argv;
-
-  struct gengetopt_args_info ai;
-  if (cmdline_parser(argc, argv, &ai) != 0) {
-    cmdline_parser_print_help();
-    exit(1);
-  }
 
   PolkitAgentListener *listener;
   PolkitSubject* session;
   GError* error = NULL;
   GMainLoop *loop;
-
-
-  runInSerie = ai.serial_given;
-  runInParallel = ai.parallel_given;
-  runInSilence = ai.quiet_given || ai.silent_given;
-  runInVerbose = !runInSilence && ai.verbose_given;
-
-  if(runInSilence){
-    log__silence();
-  }
-
-  if(runInVerbose){
-    log__verbose();
-  }
-
-
-
-  if( !ai.command_given ){
-    log__fail_cmdline__command_required();
-    exit(1);
-  }
-
-  cmd_line = ai.command_arg;
-
-  char **cmd_argv = NULL;
-
-  if ( !g_shell_parse_argv ( ai.command_arg, NULL, &cmd_argv, &error ) ){
-      fprintf(stderr, "Unable to parse cmdline options: %s\n", error->message);
-      g_error_free ( error );
-      return 1;
-  }
-
-  g_strfreev(cmd_argv);
-
-  if(runInSerie && runInParallel){
-    log__fail_cmdline__either_parallel_or_series();
-    return 1;
-  }
-
-  if(!runInSerie && !runInParallel){
-    log__fail_cmdline__parallel_or_series_required();
-    return 1;
-  }
-
-  log__verbose__cmd_and_mode();
-
-
-
-
-
+  
     loop = g_main_loop_new (NULL, FALSE);
 
     int rc = 0;
