@@ -5,17 +5,22 @@
 #include "polkit-auth-handler.service.h"
 #include <glib.h>
 #include <stdio.h>
+#include "app.h"
 #include "error-message.dialog.h"
 
 
 int main(int argc, char *argv[])
 {
 
+  const int return_code = app__init(argc, argv);
+  if(return_code != 0){
+    return return_code;
+  }
   PolkitAgentListener *listener;
   PolkitSubject* session;
   GError* error = NULL;
   GMainLoop *loop;
-  
+
     loop = g_main_loop_new (NULL, FALSE);
 
     int rc = 0;

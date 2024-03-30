@@ -24,13 +24,12 @@ const char*  app__get_cmd_line(){
   return current_cmd_line;
 }
 
-Application app_get(){
-  return (Application){
-      .argc = 0 ,
-      .argv = NULL ,
-      .command_line = app__get_cmd_line() ,
-      .handling_mode = AuthHandlingMode_PARALLEL
-  };
+int app__get_argc(){
+  return 0;
+}
+
+char**  app__get_argv(){
+  return NULL;
 }
 
 int quitloop(gpointer fixture_ptr){

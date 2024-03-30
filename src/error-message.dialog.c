@@ -7,8 +7,9 @@ static bool is_gtk_initialized = false;
 
 void lazy_init_gtk(){
     if(!is_gtk_initialized){
-        Application app = app_get();
-          gtk_init(&app.argc, &app.argv);
+        int argc = app__get_argc();
+        char **argv = app__get_argv();
+        gtk_init(&argc, &argv);
         is_gtk_initialized = true;
     }
 }

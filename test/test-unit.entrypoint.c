@@ -23,14 +23,14 @@ const char*  app__get_cmd_line(){
   return "bash ./assets/test_response_command.sh";
 }
 
-Application app_get(){
-  return (Application){
-      .argc = 0 ,
-      .argv = NULL ,
-      .command_line = app__get_cmd_line() ,
-      .handling_mode = AuthHandlingMode_PARALLEL
-  };
+int app__get_argc(){
+  return 0;
 }
+
+char**  app__get_argv(){
+  return NULL;
+}
+
 
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){

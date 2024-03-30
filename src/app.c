@@ -16,21 +16,27 @@ const char*  app__get_cmd_line(){
   return cmd_line;
 }
 
+typedef struct 
+{
+	int argc;
+	char ** argv;
+	const char* command_line;
+	AuthHandlingMode handling_mode;
+} Application;
+
+
 AuthHandlingMode app__get_auth_handling_mode(){
   return handling_mode;
 }
 
-
-Application app_get(){
-  return (Application){
-      .argc = static_argc ,
-      .argv = static_argv ,
-      .command_line = cmd_line ,
-      .handling_mode = handling_mode
-  };
+int app__get_argc(){
+  return static_argc;
+}
+char ** app__get_argv(){
+  return static_argv;
 }
 
-int app_init(int argc, char *argv[]){
+int app__init(int argc, char *argv[]){
 	if(isInitialized){
 		return 0;
 	}
