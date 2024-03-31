@@ -78,10 +78,10 @@ void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char *
         g_io_channel_flush(write_channel, &data->error);
 }
 
-static void auth_dlg_data_run_and_free_task(AuthDlgData *d, gboolean result){
+static void auth_dlg_data_run_and_free_task(AuthDlgData *d){
     GTask *task = d->task;
     if(task != NULL){
-		g_task_return_boolean(task, result);
+		g_task_return_boolean(task, true);
         g_object_unref(task);
         d->task = NULL;
     }
@@ -91,7 +91,7 @@ static void auth_dlg_data_free(AuthDlgData *d)
 {
     GError* error = NULL;
 
-    auth_dlg_data_run_and_free_task(d, false);
+    auth_dlg_data_run_and_free_task(d);
 	g_object_unref(d->session);
 	g_free(d->action_id);
     g_free(d->cookie);
@@ -193,7 +193,7 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
         blocks_mode_private_data_write_to_channel(d, message);
     }
     if (authorized || canceled) {
-		auth_dlg_data_run_and_free_task(d, authorized);
+		auth_dlg_data_run_and_free_task(d);
 		auth_dlg_data_free(d);
 		return;
 	}
