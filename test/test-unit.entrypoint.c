@@ -3,8 +3,9 @@
 #include <locale.h>
 #include <string.h>
 #include <stdio.h>
-#include "../src/app.h"
+#include "app.mock.h"
 #include <polkit/polkit.h>
+#include "src/app.h"
 #include "src/logger.h"
 #include "logger.mock.h"
 #include "../src/request-messages.h"
@@ -18,25 +19,24 @@ typedef struct {
   int obj;
 } Fixture;
 
-// mock
-const char*  app__get_cmd_line(){
-  return "bash ./assets/test_response_command.sh";
-}
-
-int app__get_argc(){
-  return 0;
-}
-
-char**  app__get_argv(){
-  return NULL;
-}
-
+const int test_argc = 4;
+char * test_argv[] = {
+	"cmd-polkit-agent",
+	"-p", 
+	"-c", 
+	"bash ./assets/test_response_command.sh", 
+	NULL
+};
 
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){
 	reset_logs();
 	setup_gtk_mock();
 	reset_lazy_init_gtk();
+	app__reset();
+
+	app__init(test_argc, test_argv);
+
 }
 
 static void test_tear_down (Fixture *fixture, gconstpointer user_data){
@@ -82,7 +82,41 @@ Error: command argument is required\n\
 Error: Only parallel or serial must be selected, not both\n\
 Error: Parallel or serial option are required\n\
 ");
-	g_assert_cmpstr(get_stdout()->str, ==, "<mock help message>\n");
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+");
 }
 
 static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
@@ -114,7 +148,40 @@ Error: command argument is required\n\
 Error: Only parallel or serial must be selected, not both\n\
 Error: Parallel or serial option are required\n\
 ");
-	g_assert_cmpstr(get_stdout()->str, ==, "<mock help message>\n\
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
 Vrbos:test_verbose_logs:COMMAND TO EXECUTE: bash ./assets/test_response_command.sh\n\
 Vrbos:test_verbose_logs:AUTH HANDLING MODE: PARALLEL\n\
 Vrbos:test_verbose_logs:Polkit session show error: test\n\

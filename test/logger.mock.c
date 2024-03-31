@@ -3,13 +3,11 @@
 #include <locale.h>
 #include <string.h>
 #include <stdio.h>
-#include "../src/app.h"
 
 GString * get_stdout();
 GString * get_stderr();
 GString *memory_stdout = NULL;
 GString *memory_stderr = NULL;
-AuthHandlingMode mode = AuthHandlingMode_PARALLEL;
 
 static void mock_printf(const char * format, ...){
 
@@ -40,16 +38,7 @@ static void mock_vprintf(const char *format, va_list arglist){
 #define vprintf(f_, a_) mock_vprintf((f_), (a_))
 
 
-// mock
-void cmdline_parser_print_help(void) {
-	g_string_printf(memory_stdout, "<mock help message>\n");
-}
-
-AuthHandlingMode app__get_auth_handling_mode(){
-  return mode;
-}
-
-
+#include "../src/cmdline.c"
 #include "../src/logger.c"
 #include "logger.mock.h"
 

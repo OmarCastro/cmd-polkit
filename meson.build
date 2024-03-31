@@ -32,6 +32,7 @@ main_sources += common_sources
 test_sources = [
   'test/logger.mock.c',
   'test/gtk.mock.c',
+  'test/app.mock.c',
   'test/polkit.mock.c',
   'test/error-message.mock.c',
   'test/polkit-auth-handler.service.mock.c',

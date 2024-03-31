@@ -3,10 +3,12 @@
 #include <locale.h>
 #include <string.h>
 #include <stdio.h>
-#include "../src/app.h"
+#include "app.mock.h"
 #include <polkit/polkit.h>
 #include "error-message.mock.h"
 #include "polkit-auth-handler.service.mock.h"
+#include "src/app.h"
+#include "test/app.mock.h"
 
 
 typedef struct {
@@ -19,18 +21,14 @@ typedef struct {
 char *current_cmd_line = "bash ./assets/test_response_command.sh";
 
 
-// mock
-const char*  app__get_cmd_line(){
-  return current_cmd_line;
-}
-
-int app__get_argc(){
-  return 0;
-}
-
-char**  app__get_argv(){
-  return NULL;
-}
+const int test_argc = 4;
+char * test_argv[] = {
+	"cmd-polkit-agent",
+	"-p", 
+	"-c", 
+	"bash ./assets/test_response_command.sh", 
+	NULL
+};
 
 int quitloop(gpointer fixture_ptr){
 	Fixture *fixture = fixture_ptr;
@@ -76,21 +74,24 @@ static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 
 
 static void test_polkit_auth_handler_authentication_success (Fixture *fixture, gconstpointer user_data) {
-	current_cmd_line = "bash ./assets/test_response_command.sh";
+	test_argv[3] = "bash ./assets/test_response_command.sh";
+	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
 	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
 	g_main_loop_run(fixture->loop);
 }
 
 static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, gconstpointer user_data) {
-	current_cmd_line = "bash ./assets/test_response_cancel.sh";
+	test_argv[3] = "bash ./assets/test_response_cancel.sh";
+	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
 	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
 	g_main_loop_run(fixture->loop);
 }
 
 static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture, gconstpointer user_data) {
-	current_cmd_line = "bash ./assets/test_response_fail_retry.sh";
+	test_argv[3] = "bash ./assets/test_response_fail_retry.sh";
+	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
 	g_idle_add(test_polkit_auth_handler_authentication_aux, fixture);
 	g_main_loop_run(fixture->loop);
@@ -98,7 +99,7 @@ static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture
 
 
 static void test_set_up (Fixture *fixture, gconstpointer user_data){
-
+	app__reset();
 }
 
 static void test_tear_down (Fixture *fixture, gconstpointer user_data){
