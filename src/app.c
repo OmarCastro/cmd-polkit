@@ -67,7 +67,7 @@ int app__init(int argc, char *argv[]){
 
   if( !ai.command_given ){
     log__fail_cmdline__command_required();
-    exit(1);
+    return 1;
   }
 
   cmd_line = ai.command_arg;
