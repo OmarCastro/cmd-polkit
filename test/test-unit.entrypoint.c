@@ -380,6 +380,27 @@ static void test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init (Fixture
 	// if there is no error, this passes
 }
 
+static void test_app_init_without_arguments_shows_help_message(Fixture *fixture, gconstpointer user_data) {
+	char* argv[] = {
+		"cmd-polkit", 
+		NULL
+	};
+	app__init(1, argv);
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+");
+}
+
 
 
 #define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
@@ -412,6 +433,7 @@ int main (int argc, char *argv[]) {
 	test ("/ error message dialog / lazy gtk init inits gtk once", test_error_message_dialog_inits_once);
 	test ("/ error message dialog / show message runs gtk dialog", test_error_message_dialog_runs_gtk_dialog);
 	test ("/ polkit auth handler / CmdPkAgentPolkitListenerClass initialization", test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init);
+	test ("/ app / app initialization without arguments shows help message", test_app_init_without_arguments_shows_help_message);
 
 	#undef test
 	return g_test_run ();
