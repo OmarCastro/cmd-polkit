@@ -43,7 +43,7 @@ int app__init(int argc, char *argv[]){
   struct gengetopt_args_info ai;
   if (cmdline_parser(argc, argv, &ai) != 0) {
     log__fail_cmdline__print_help();
-    return 1;
+    goto cmd_exit_1;
   }
 
   bool runInSerie = ai.serial_given;
@@ -66,28 +66,34 @@ int app__init(int argc, char *argv[]){
     return 1;
   }
 
-  cmd_line = ai.command_arg;
+  cmd_line = g_strdup(ai.command_arg);
 
   GError* error = NULL;
 
-  if ( !g_shell_parse_argv ( ai.command_arg, NULL, &cmd_line_argv, &error ) ){
-      fprintf(stderr, "Unable to parse cmdline options: %s\n", error->message);
-      g_error_free ( error );
-      return 1;
+  if ( !g_shell_parse_argv ( cmd_line, NULL, &cmd_line_argv, &error ) ){
+    fprintf(stderr, "Unable to parse cmdline options: %s\n", error->message);
+    g_error_free ( error );
+    goto cmd_exit_1;
   }
 
   if(runInSerie && runInParallel){
     log__fail_cmdline__either_parallel_or_series();
-    return 1;
+    goto cmd_exit_1;
   }
 
   if(!runInSerie && !runInParallel){
     log__fail_cmdline__parallel_or_series_required();
-    return 1;
+    goto cmd_exit_1;
   }
 
   handling_mode = runInParallel ? AuthHandlingMode_PARALLEL : AuthHandlingMode_SERIE;
 
   log__verbose__cmd_and_mode();
+  cmdline_parser_free(&ai);
+
   return 0;
+
+cmd_exit_1:
+  cmdline_parser_free(&ai);
+  return 1;
 }

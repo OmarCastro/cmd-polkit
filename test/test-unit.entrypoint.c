@@ -33,13 +33,12 @@ static void test_set_up (Fixture *fixture, gconstpointer user_data){
 	reset_logs();
 	setup_gtk_mock();
 	reset_lazy_init_gtk();
-	app__reset();
-
 	app__init(test_argc, test_argv);
 
 }
 
 static void test_tear_down (Fixture *fixture, gconstpointer user_data){
+	app__reset();
 }
 
 

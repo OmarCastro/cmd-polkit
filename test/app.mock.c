@@ -6,4 +6,12 @@
 
 void app__reset(){
 	isInitialized = false;
+	if(cmd_line != NULL){
+		g_free(cmd_line);
+		cmd_line = NULL;
+	}
+	if(cmd_line_argv != NULL){
+	    g_strfreev (cmd_line_argv);
+		cmd_line_argv = NULL;
+	}
 }
