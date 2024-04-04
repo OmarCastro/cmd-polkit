@@ -17,6 +17,7 @@ void log__verbose();
 void log__fail_cmdline__command_required(MACRO__SOURCE_LOCATION_PARAMS);
 void log__fail_cmdline__either_parallel_or_series(MACRO__SOURCE_LOCATION_PARAMS);
 void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAMS);
+void log__fail_cmdline__print_help();
 
 #ifndef LOGGER_C
 #define log__fail_cmdline__command_required()               log__fail_cmdline__command_required(MACRO__SOURCE_LOCATION_VALUES)

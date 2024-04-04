@@ -42,7 +42,7 @@ int app__init(int argc, char *argv[]){
 
   struct gengetopt_args_info ai;
   if (cmdline_parser(argc, argv, &ai) != 0) {
-    cmdline_parser_print_help();
+    log__fail_cmdline__print_help();
     return 1;
   }
 

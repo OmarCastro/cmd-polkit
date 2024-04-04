@@ -32,6 +32,31 @@ static void log__verbose_formatted(const char* format, ...);
 static inline void log__verbose_raw(const char* text){ log__verbose_formatted("%s", text); }
 
 
+void print_help (FILE *file)
+{
+	size_t len_purpose = strlen(gengetopt_args_info_purpose);
+	size_t len_usage = strlen(gengetopt_args_info_usage);
+
+	if (len_usage > 0) {
+		fprintf(file, "%s\n", gengetopt_args_info_usage);
+	}
+	if (len_purpose > 0) {
+		fprintf(file, "%s\n", gengetopt_args_info_purpose);
+	}
+
+	if (len_usage || len_purpose) {
+		fprintf(file, "\n");
+	}
+
+	if (strlen(gengetopt_args_info_description) > 0) {
+		fprintf(file, "%s\n\n", gengetopt_args_info_description);
+	}
+
+  int i = 0;
+  while (gengetopt_args_info_help[i])
+    fprintf(file, "%s\n", gengetopt_args_info_help[i++]);
+}
+
 
 void log__silence(){
   silenced_logs = true;
@@ -56,6 +81,12 @@ void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAM
   UPDATE_CURRENT_SOURCE_LOCATION()
   log__fail_cmdline("Parallel or serial option are required");
 }
+
+void log__fail_cmdline__print_help(){
+  fprintf(stderr, "\n");
+  print_help(stderr);
+}
+
 
 
 // logs on verbose only
@@ -181,8 +212,8 @@ static void log__verbose_formatted( const char* format, ... )
 
 static void log__fail_cmdline(const char* text){
   if(!silenced_logs) {
-    fprintf(stderr, "Error: %s\n", text);
-    cmdline_parser_print_help();
+    fprintf(stderr, "Error parsing command line: %s\n", text);
+    log__fail_cmdline__print_help();
   }
 }
 
