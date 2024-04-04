@@ -4,7 +4,7 @@ purpose "A tool that allows to easily customize the UI used to authenticate on p
 usage "cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND"
 
 # Options
-option "command" c "Command to execute on authorization request" typestr="COMMAND" string required
+option "command" c "Command to execute on authorization request" typestr="COMMAND" string optional
 option "serial" s "handle one authorization request at a time" optional
 option "parallel" p "handle authorization in parallel" optional
 option "verbose" v "Increase program verbosity" optional
