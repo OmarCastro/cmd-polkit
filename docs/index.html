@@ -46,6 +46,14 @@
             `cmd-polkit` is a tool that allows to easily customize the UI used to authenticate on polkit
         </section>
 
+        <section class="section section--introduction" ss:markdown>
+            ## How it works
+
+            It works by calling the defined command and communicate via stdin and stdout, the command receives the message from stdin and sends it by writing to stdout,
+            each line represents a message, the format used for communication is JSON
+
+        </section>
+
     </div>
         
     </body>
