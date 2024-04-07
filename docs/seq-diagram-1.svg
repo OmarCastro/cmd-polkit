@@ -1,4 +1,35 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">
+<svg id="seq-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+
+  <style>
+    #seq-diagram {
+      text, tspan {
+        font-size: 16px;
+        font-family: Arial;
+        fill: black;
+        text-anchor: middle;
+      }
+
+      #actor-system, .actor--man__body, .actor--man__head{
+        fill:transparent;
+        stroke:black;
+        stroke-width:3
+      }
+
+      .diagram-line, .diagram-line-cont, .message-line {
+        stroke:black;
+        stroke-width:2
+      }
+
+      .diagram-line-cont {
+        stroke-linecap: round;
+        stroke-dasharray: 1 5;
+      }
+
+
+    }
+
+
+  </style>
   <!-- Define actor group -->
   <defs>
 
@@ -7,47 +38,106 @@
       <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
     </marker>
 
-    <g id="actor">
-      <circle cx="0" cy="0" r="20" fill="lightblue"/>
-      <line x1="0" y1="20" x2="0" y2="55" stroke="black" stroke-width="3"/>
+    <g id="actor-man">
+      <circle class="actor--man__head" cx="0" cy="0" r="20" />
+      <line class="actor--man__body" x1="0" y1="20" x2="0" y2="45" />
       <!-- Arms -->
-      <line x1="-20" y1="30" x2="20" y2="30" stroke="black" stroke-width="3"/>
+      <line class="actor--man__body" x1="-20" y1="30" x2="20" y2="30" />
       <!-- Legs -->
-      <line x1="0" y1="55" x2="-20" y2="75" stroke="black" stroke-width="3"/>
-      <line x1="0" y1="55" x2="20" y2="75" stroke="black" stroke-width="3"/>
-      <!-- Diagram line -->
-      <line x1="0" y1="125" x2="0" y2="325" stroke="black" stroke-width="2" />
+      <line class="actor--man__body" x1="0" y1="45" x2="-20" y2="65" />
+      <line class="actor--man__body" x1="0" y1="45" x2="20" y2="65" />
+    </g>
+
+    <g id="actor-system">
+      <rect x="-20" y="20" width="17" height="17" rx="3" />
+      <rect x="3" y="20" width="17" height="17"/>
+      <rect x="-20" y="43" width="17" height="17"/>
+      <rect x="3" y="43" width="17" height="17" />
     </g>
 
     <g id="right-message">
-      <line x1="0" y1="0" x2="180" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+      <line class="message-line" x1="0" y1="0" x2="180" y2="0" marker-end="url(#arrowhead)"/>
+    </g>
+
+    <g id="left-message">
+      <line class="message-line" x1="200" y1="0" x2="20" y2="0" marker-end="url(#arrowhead)"/>
     </g>
   </defs>
   
   <!-- Actor A -->
   <g transform="translate(100, 50)">
-    <use href="#actor"/>
-    <text x="0" y="110" font-family="Arial" font-size="14" fill="black" text-anchor="middle">Actor A</text>
+    <use href="#actor-system"/>
+    <text x="0" y="100" fill="black">Polkit</text>
+    <line class="diagram-line" x1="0" y1="115" x2="0" y2="500" />
+    <line class="diagram-line-cont" x1="0" y1="505" x2="0" y2="520" />
+
   </g>
 
   <!-- Actor B -->
   <g transform="translate(300, 50)">
-    <use href="#actor"/>
-    <text x="0" y="110" font-family="Arial" font-size="14" fill="black" text-anchor="middle">Actor B</text>
+    <use href="#actor-system"/>
+    <text x="0" y="100"  fill="black">cmd-polkit-agent</text>
+    <line class="diagram-line" x1="0" y1="115" x2="0" y2="500" />
+    <line class="diagram-line-cont" x1="0" y1="505" x2="0" y2="520" />
   </g>
 
-  <!-- Message -->
+  <!-- Actor C -->
+  <g transform="translate(500, 155)">
+    <use href="#actor-system"/>
+    <text x="0" y="100">command</text>
+    <line class="diagram-line" x1="0" y1="145" x2="0" y2="320" />
+  </g>
+
+  <!-- Messages -->
   <g transform="translate(100, 275)">
     <use href="#right-message"/>
-    <text x="100" y="-5" font-family="Arial" font-size="14" fill="black" text-anchor="middle">Message</text>
+    <text x="100" y="-5" >Request authentication</text>
   </g>
 
-  <!-- Message -->
-  <g transform="translate(100, 375)">
+  <g transform="translate(300, 300)">
     <use href="#right-message"/>
-    <text x="100" y="-5" font-family="Arial" font-size="14" fill="black" text-anchor="middle">Message</text>
+  <text x="0" y="-23">
+      <tspan dy="0" x="100">spawn command</tspan>
+      <tspan dy="18" x="100">pipe stdin/stdout</tspan>
+    </text>
   </g>
 
+  <g transform="translate(300, 325)">
+    <use href="#right-message"/>
+    <text x="100" y="-5" >request authentication</text>
+  </g>
+
+  <g transform="translate(300, 350)">
+    <use href="#left-message"/>
+    <text x="100" y="-5" >authenticate</text>
+  </g>
+
+  <g transform="translate(100, 375)">
+    <use href="#left-message"/>
+    <text x="100" y="-5">authenticate</text>
+  </g>
+
+  rect
+
+  <g transform="translate(100, 400)">
+    <use href="#right-message"/>
+    <text x="100" y="-5">authentication OK</text>
+  </g>
+
+  <g transform="translate(300, 425)">
+    <use href="#right-message"/>
+    <text x="100" y="-5">authentication OK</text>
+  </g>
+
+  <g transform="translate(300, 450)">
+    <use href="#right-message"/>
+    <text x="100" y="-5">close stdin/stdout</text>
+  </g>
+
+  <g transform="translate(300, 475)">
+    <use href="#right-message"/>
+    <text x="100" y="-5">SIGINT</text>
+  </g>
 
   
 </svg>
