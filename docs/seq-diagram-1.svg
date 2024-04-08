@@ -1,7 +1,6 @@
 <svg id="seq-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
 
   <style>
-    #seq-diagram {
       text, tspan {
         font-size: 16px;
         font-family: Arial;
@@ -24,10 +23,6 @@
         stroke-linecap: round;
         stroke-dasharray: 1 5;
       }
-
-
-    }
-
 
   </style>
   <!-- Define actor group -->
@@ -56,11 +51,11 @@
     </g>
 
     <g id="right-message">
-      <line class="message-line" x1="0" y1="0" x2="180" y2="0" marker-end="url(#arrowhead)"/>
+      <line class="message-line" x1="0" y1="0" x2="180" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
     </g>
 
     <g id="left-message">
-      <line class="message-line" x1="200" y1="0" x2="20" y2="0" marker-end="url(#arrowhead)"/>
+      <line class="message-line" x1="200" y1="0" x2="20" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
     </g>
   </defs>
   
