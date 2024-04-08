@@ -1,21 +1,31 @@
-<svg id="seq-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+<svg id="seq-diagram" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 600">
 
   <style>
+
+      svg {
+        --stroke-color: #333;
+      }
+
+
       text, tspan {
         font-size: 16px;
         font-family: Arial;
-        fill: black;
+        fill: var(--stroke-color);
         text-anchor: middle;
       }
 
       #actor-system, .actor--man__body, .actor--man__head{
         fill:transparent;
-        stroke:black;
+        fill: var(--stroke-color);
         stroke-width:3
       }
 
+      .arrow-head {
+        fill: var(--stroke-color);
+      }
+
       .diagram-line, .diagram-line-cont, .message-line {
-        stroke:black;
+        stroke: var(--stroke-color);
         stroke-width:2
       }
 
@@ -24,13 +34,20 @@
         stroke-dasharray: 1 5;
       }
 
+      @media (prefers-color-scheme:dark) {
+        svg {
+          --stroke-color: #ddd
+
+        }
+      }
+
   </style>
   <!-- Define actor group -->
   <defs>
 
    <marker id="arrowhead" markerWidth="10" markerHeight="7"
             refX="0" refY="3.5" orient="auto">
-      <polygon points="0 0, 10 3.5, 0 7" fill="black"/>
+      <polygon class="arrow-head" points="0 0, 10 3.5, 0 7"/>
     </marker>
 
     <g id="actor-man">
@@ -51,11 +68,11 @@
     </g>
 
     <g id="right-message">
-      <line class="message-line" x1="0" y1="0" x2="180" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+      <line class="message-line" x1="0" y1="0" x2="180" y2="0" marker-end="url(#arrowhead)"/>
     </g>
 
     <g id="left-message">
-      <line class="message-line" x1="200" y1="0" x2="20" y2="0" stroke="black" stroke-width="2" marker-end="url(#arrowhead)"/>
+      <line class="message-line" x1="200" y1="0" x2="20" y2="0" marker-end="url(#arrowhead)"/>
     </g>
   </defs>
   
