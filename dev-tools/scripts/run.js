@@ -81,7 +81,8 @@ async function buildDocs () {
   logStartStage('build:docs', 'build docs')
 
   await rm_rf('build-docs')
-  await mkdir_p('build-docs')
+  await cp_R('docs', 'build-docs')
+  await cp_R('build-test/meson-logs', 'build-docs/reports')
   await cp_R('build-test/meson-logs', 'build-docs/reports')
   await createBadges()
   await Promise.all([
