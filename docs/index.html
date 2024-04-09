@@ -2,12 +2,9 @@
 <html lang="en">
     <head>
         <title>It's a QR Code</title>
-        <meta name="description" content="documentation of 'it's a QR Code' component">
-        <meta name="keywords" content="qrcode qr webcomponents">
+        <meta name="description" content="documentation of 'cmd-polkit' application">
+        <meta name="keywords" content="polkit policy-kit security">
         <meta charset="UTF-8">
-        <script type="module" src="dist/qrcode.element.min.js?named=qr-code" async></script>
-        <script type="module" src="doc.js" async></script>
-
         <meta name="viewport" content="width=device-width">
         <link rel="stylesheet" href="doc.css" ss:inline>
     </head>
@@ -50,9 +47,18 @@
             ## How it works
 
             It works by calling the defined command and communicate via stdin and stdout, the command receives the message from stdin and sends it by writing to stdout,
-            each line represents a message, the format used for communication is JSON
+            each line represents a message, the format used for communication is JSON.
+
+            The next figure show a sequence diagram of an authentication process
+
+            <figure style="text-align: center;">
+                <img width="600" src="./seq-diagram-1.svg"></img>
+                <figcaption>Fig.1 - authentication process</figcaption>
+            </figure>
 
         </section>
+
+
 
     </div>
         
