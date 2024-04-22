@@ -58,6 +58,39 @@
 
         </section>
 
+        <section class="section section--messages" ss:markdown>
+
+            ## Message schemas
+
+            ### authentication message request
+
+            When polkit request authentication, cmd-polkit will send a message 
+            to command stdin. It respects the following schema 
+
+            ```
+            {
+                "action": "request password",
+                "prompt": string 
+                "message": string 
+            }
+            ```
+
+            ### authentication message response
+
+            After the _authentication message request_ is sent, it will expect
+            a response from command stdout that respects the folloing schema,
+            it will use the password to authenticate to polkit
+
+            ```
+            {
+                "action": "authenticate",
+                "password": string 
+            }
+            ```
+
+            
+        </section>
+
 
 
     </div>
