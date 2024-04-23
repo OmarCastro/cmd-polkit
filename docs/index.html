@@ -88,7 +88,23 @@
             }
             ```
 
-            
+            ### authentication result message
+
+            After authentication attempt is made is made, a message will be
+            sent to command to show the result
+
+            ```
+            {
+                "action": "authorization response",
+                "authorized": boolean 
+            }
+            ```
+
+            If the authentication is successful, an SIGINT message is sent to command
+            to finish the command, otherwise, another _authentication message request_
+            is sent to command
+
+
         </section>
 
 
