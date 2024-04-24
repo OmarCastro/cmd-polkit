@@ -74,12 +74,12 @@ void log__fail_cmdline__command_required(MACRO__SOURCE_LOCATION_PARAMS){
 
 void log__fail_cmdline__either_parallel_or_series(MACRO__SOURCE_LOCATION_PARAMS){
   UPDATE_CURRENT_SOURCE_LOCATION()
-  log__fail_cmdline("Only parallel or serial must be selected, not both");
+  log__fail_cmdline("only serial or parallel mode must be selected, not both");
 }
 
 void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAMS){
   UPDATE_CURRENT_SOURCE_LOCATION()
-  log__fail_cmdline("Parallel or serial option are required");
+  log__fail_cmdline("parallel or serial mode is required");
 }
 
 void log__fail_cmdline__print_help(){
