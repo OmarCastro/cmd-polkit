@@ -50,6 +50,7 @@ test(
   'test-suite',
   executable('cmd-polkit-agent-test', test_unit_sources, dependencies: deps),
   env: [
+    'LC_ALL=C',
     'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
     'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
   ],
@@ -61,6 +62,7 @@ test(
   'test-suite-it',
   executable('cmd-polkit-agent-test-it-command-exec', test_it_command_exec_sources, dependencies: deps),
   env: [
+    'LC_ALL=C',
     'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
     'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
   ],

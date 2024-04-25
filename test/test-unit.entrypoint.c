@@ -490,6 +490,34 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 }
 
 
+static void test_app_init_with_blank_command_line_shows_error(Fixture *fixture, gconstpointer user_data) {
+	char* argv[] = {
+		"cmd-polkit-agent", 
+		"-sp",
+		"-c", 
+		" ", 
+		NULL
+	};
+	app__init(4, argv);
+	g_assert_cmpstr(get_stderr()->str, ==, "\
+Error parsing command line: error parsing shell command: Text was empty (or contained only whitespace)\n\
+\n\
+Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND\n\
+A tool that allows to easily customize the UI used to authenticate on polkit\n\
+\n\
+  -h, --help             Print help and exit\n\
+  -V, --version          Print version and exit\n\
+  -c, --command=COMMAND  Command to execute on authorization request\n\
+  -s, --serial           handle one authorization request at a time\n\
+  -p, --parallel         handle authorization in parallel\n\
+  -v, --verbose          Increase program verbosity\n\
+  -q, --quiet            Do not print anything\n\
+      --silent           \n\
+");
+	g_assert_cmpstr(get_stdout()->str, ==, "");
+}
+
+
 
 
 #define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
@@ -526,6 +554,7 @@ int main (int argc, char *argv[]) {
 	test ("/ app / app initialization with invalid arguments shows help message", test_app_init_with_invalid_arguments_shows_help_message);
 	test ("/ app / app initialization without serial and parallel mmodes shows error", test_app_init_without_serial_and_parallel_shows_error);
 	test ("/ app / app initialization with both serial and parallel modes shows error", test_app_init_with_both_serial_and_parallel_shows_error);
+	test ("/ app / app initialization with blank command line shows error", test_app_init_with_blank_command_line_shows_error);
 
 	#undef test
 	return g_test_run ();

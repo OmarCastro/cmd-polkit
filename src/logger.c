@@ -82,6 +82,15 @@ void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAM
   log__fail_cmdline("parallel or serial mode is required");
 }
 
+void log__fail_cmdline__error_parsing_command(MACRO__SOURCE_LOCATION_PARAMS, const char * message){
+  UPDATE_CURRENT_SOURCE_LOCATION()
+  if(!silenced_logs) {
+    fprintf(stderr, "Error parsing command line: error parsing shell command: %s\n", message);
+    log__fail_cmdline__print_help();
+  }
+}
+
+
 void log__fail_cmdline__print_help(){
   fprintf(stderr, "\n");
   print_help(stderr);

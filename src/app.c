@@ -71,7 +71,7 @@ int app__init(int argc, char *argv[]){
   GError* error = NULL;
 
   if ( !g_shell_parse_argv ( cmd_line, NULL, &cmd_line_argv, &error ) ){
-    fprintf(stderr, "Unable to parse cmdline options: %s\n", error->message);
+    log__fail_cmdline__error_parsing_command(error->message);
     g_error_free ( error );
     goto cmd_exit_1;
   }

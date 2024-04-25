@@ -17,12 +17,14 @@ void log__verbose();
 void log__fail_cmdline__command_required(MACRO__SOURCE_LOCATION_PARAMS);
 void log__fail_cmdline__either_parallel_or_series(MACRO__SOURCE_LOCATION_PARAMS);
 void log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_PARAMS);
+void log__fail_cmdline__error_parsing_command(MACRO__SOURCE_LOCATION_PARAMS, const char * error_message);
 void log__fail_cmdline__print_help();
 
 #ifndef LOGGER_C
 #define log__fail_cmdline__command_required()               log__fail_cmdline__command_required(MACRO__SOURCE_LOCATION_VALUES)
 #define log__fail_cmdline__either_parallel_or_series()      log__fail_cmdline__either_parallel_or_series(MACRO__SOURCE_LOCATION_VALUES)
 #define log__fail_cmdline__parallel_or_series_required()    log__fail_cmdline__parallel_or_series_required(MACRO__SOURCE_LOCATION_VALUES)
+#define log__fail_cmdline__error_parsing_command(message)   log__fail_cmdline__error_parsing_command(MACRO__SOURCE_LOCATION_VALUES, message)
 #endif
 
 // logs on verbose only
