@@ -2,7 +2,6 @@
     "type": "module",
     "dependencies": {
         "badge-maker": "^3.3.1",
-        "html-minifier": "^4.0.0",
         "image-size": "^1.1.1",
         "js-yaml": "^4.1.0",
         "jsdom": "^24.0.0",

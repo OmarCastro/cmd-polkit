@@ -1,7 +1,6 @@
 /* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
-import { minify } from 'html-minifier'
 import { imageSize } from 'image-size'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
@@ -204,11 +203,7 @@ queryAll('[ss:toc]').forEach(element => {
   element.replaceWith(ol)
 })
 
-const minifiedHtml = minify('<!DOCTYPE html>' + document.documentElement?.outerHTML || '', {
-  removeAttributeQuotes: true,
-  useShortDoctype: true,
-  collapseWhitespace: false,
-})
+const minifiedHtml = '<!doctype html>' + minifyDOM(document.documentElement).outerHTML
 
 fs.writeFileSync(`${docsOutputPath}/${process.argv[2]}`, minifiedHtml)
 
@@ -247,4 +242,93 @@ async function * getFiles (dir) {
       yield res
     }
   }
+}
+
+
+/**
+ * Minifies the DOM tree
+ * @param {Element} domElement - target DOM tree root element
+ * @returns {Element} root element of the minified DOM
+ */
+function minifyDOM (domElement) {
+  const window = domElement.ownerDocument.defaultView
+  const { TEXT_NODE, ELEMENT_NODE, COMMENT_NODE } = window.Node
+
+  /** @typedef {"remove-blank" | "1-space" | "pre"} WhitespaceMinify */
+  /**
+   * @typedef {object} MinificationState
+   * @property {WhitespaceMinify} whitespaceMinify - current whitespace minification method
+   */
+
+  /**
+   * Minify the text node based con current minification status
+   * @param {ChildNode} node - current text node
+   * @param {WhitespaceMinify} whitespaceMinify - whitespace minification removal method
+   */
+  function minifyTextNode (node, whitespaceMinify) {
+    if (whitespaceMinify === 'pre') {
+      return
+    }
+    // blank node is empty or contains whitespace only, so we remove it
+    const isBlankNode = !/[^\s]/.test(node.nodeValue)
+    if (isBlankNode && whitespaceMinify === 'remove-blank') {
+      node.remove()
+      return
+    }
+    if (whitespaceMinify === '1-space') {
+      node.nodeValue = node.nodeValue.replace(/\s\s+/g, ' ')
+    }
+  }
+
+  const defaultMinificationState = { whitespaceMinify: '1-space' }
+
+  /**
+   * @param {Element} element
+   * @param {MinificationState} minificationState
+   * @returns {MinificationState} update minification State
+   */
+  function updateMinificationStateForElement (element, minificationState) {
+    const tag = element.tagName.toLowerCase()
+    // by default, <pre> renders whitespace as is, so we do not want to minify in this case
+    if (['pre'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: 'pre' }
+    }
+    // <html> and <head> are not rendered in the viewport, so we remove it
+    if (['html', 'head'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: 'remove-blank' }
+    }
+    // in the <body>, the default whitespace behaviour is to merge multiple whitespaces to 1,
+    // there will stil have some whitespace that will be merged, but at this point, there is
+    // little benefit to remove even more duplicated whitespace
+    if (['body'].includes(tag)) {
+      return { ...minificationState, whitespaceMinify: '1-space' }
+    }
+    return minificationState
+  }
+
+  /**
+   * @param {Element} currentElement - current element to minify
+   * @param {MinificationState} minificationState - current minificationState
+   */
+  function walkElementMinification (currentElement, minificationState) {
+    const { whitespaceMinify } = minificationState
+    // we have to make a copy of the iterator for traversal, because we cannot
+    // iterate through what we'll be modifying at the same time
+    const values = [...currentElement?.childNodes?.values()]
+    for (const node of values) {
+      if (node.nodeType === COMMENT_NODE) {
+      // remove comments node
+        currentElement.removeChild(node)
+      } else if (node.nodeType === TEXT_NODE) {
+        minifyTextNode(node, whitespaceMinify)
+      } else if (node.nodeType === ELEMENT_NODE) {
+        // process child elements recursively
+        const updatedState = updateMinificationStateForElement(node, minificationState)
+        walkElementMinification(node, updatedState)
+      }
+    }
+  }
+  const initialMinificationState = updateMinificationStateForElement(domElement, defaultMinificationState)
+  walkElementMinification(domElement, initialMinificationState)
+  return domElement
 }
