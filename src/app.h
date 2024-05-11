@@ -13,6 +13,7 @@ int app__init(int argc, char *argv[]);
 int app__get_argc();
 char ** app__get_argv();
 const char*  app__get_cmd_line();
+char** app__get_cmd_line_argv();
 AuthHandlingMode app__get_auth_handling_mode();
 
 #endif
