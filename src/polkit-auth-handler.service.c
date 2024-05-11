@@ -298,15 +298,14 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 
         int retval = fcntl( d->read_channel_fd, F_SETFL, fcntl(d->read_channel_fd, F_GETFL) | O_NONBLOCK);
         if (retval != 0){
-
             fprintf(stderr,"Error setting non block on output pipe\n");
             kill(d->cmd_pid, SIGTERM);
-            exit(1);
+            polkit_agent_session_cancel(d->session);
+        } else {
+            d->read_channel = g_io_channel_unix_new(d->read_channel_fd);
+            d->write_channel = g_io_channel_unix_new(d->write_channel_fd);
+            d->read_channel_watcher = g_io_add_watch(d->read_channel, G_IO_IN, on_new_input, d);
         }
-
-        d->read_channel = g_io_channel_unix_new(d->read_channel_fd);
-        d->write_channel = g_io_channel_unix_new(d->write_channel_fd);
-        d->read_channel_watcher = g_io_add_watch(d->read_channel, G_IO_IN, on_new_input, d);
     }
     g_strfreev(cmd_argv);
 }
