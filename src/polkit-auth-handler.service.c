@@ -240,6 +240,33 @@ static void init_session(AuthDlgData *d){
 
 }
 
+static void spawn_command_for_authentication(AuthDlgData *d){
+	GError *error = NULL;
+	int cmd_input_fd;
+	int cmd_output_fd;
+
+    char ** const cmd_argv = app__get_cmd_line_argv();
+
+    if ( ! g_spawn_async_with_pipes ( NULL, cmd_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &(d->cmd_pid), &(cmd_input_fd), &(cmd_output_fd), NULL, &error)) {
+        show_error_message_format("%s", error->message);
+        polkit_agent_session_cancel(d->session);
+        return;
+    } 
+    d->read_channel_fd = cmd_output_fd;
+    d->write_channel_fd = cmd_input_fd;
+
+    int retval = fcntl( d->read_channel_fd, F_SETFL, fcntl(d->read_channel_fd, F_GETFL) | O_NONBLOCK);
+    if (retval != 0){
+        fprintf(stderr,"Error setting non block on output pipe\n");
+        kill(d->cmd_pid, SIGTERM);
+        polkit_agent_session_cancel(d->session);
+        return;
+    }
+
+    d->read_channel = g_io_channel_unix_new(d->read_channel_fd);
+    d->write_channel = g_io_channel_unix_new(d->write_channel_fd);
+    d->read_channel_watcher = g_io_add_watch(d->read_channel, G_IO_IN, on_new_input, d);
+}
 
 
 /**
@@ -274,33 +301,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     d->parser = json_parser_new ();
     d->status = AUTHENTICATING;
     init_session(d);
-
-
-	GError *error = NULL;
-	int cmd_input_fd;
-	int cmd_output_fd;
-
-    char ** const cmd_argv = app__get_cmd_line_argv();
-
-    if ( ! g_spawn_async_with_pipes ( NULL, cmd_argv, NULL, G_SPAWN_SEARCH_PATH, NULL, NULL, &(d->cmd_pid), &(cmd_input_fd), &(cmd_output_fd), NULL, &error)) {
-        show_error_message_format("%s", error->message);
-        polkit_agent_session_cancel(d->session);
-        return;
-    } 
-    d->read_channel_fd = cmd_output_fd;
-    d->write_channel_fd = cmd_input_fd;
-
-    int retval = fcntl( d->read_channel_fd, F_SETFL, fcntl(d->read_channel_fd, F_GETFL) | O_NONBLOCK);
-    if (retval != 0){
-        fprintf(stderr,"Error setting non block on output pipe\n");
-        kill(d->cmd_pid, SIGTERM);
-        polkit_agent_session_cancel(d->session);
-        return;
-    }
-
-    d->read_channel = g_io_channel_unix_new(d->read_channel_fd);
-    d->write_channel = g_io_channel_unix_new(d->write_channel_fd);
-    d->read_channel_watcher = g_io_add_watch(d->read_channel, G_IO_IN, on_new_input, d);
+    spawn_command_for_authentication(d);
 }
 
 static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(listener),
