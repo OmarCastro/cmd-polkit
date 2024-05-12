@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2024 Omar Castro
+#include "glib.h"
 #include <stdbool.h>
 #define _GNU_SOURCE
 #include <grp.h>
@@ -30,6 +31,7 @@
 G_DEFINE_TYPE(CmdPkAgentPolkitListener, cmd_pk_agent_polkit_listener, POLKIT_AGENT_TYPE_LISTENER)
 
 typedef enum {
+    IN_QUEUE,
     AUTHENTICATING,
     CANCELED,
     AUTHORIZED
@@ -62,8 +64,33 @@ struct _AuthDlgData {
 
 };
 
-static void init_session(AuthDlgData *d);
+/** 
+ * Authentication queue to be used in serial mode
+ * The an authentication goes to the queur if there is one authentication currently being handled
+ */
+GAsyncQueue * serial_mode_queue = NULL;
+AuthDlgData * serial_mode_current_authentication = NULL;
 
+bool serial_mode_is_queue_empty(){
+    return serial_mode_queue == NULL || g_async_queue_length(serial_mode_queue) <= 0;
+}
+
+void serial_mode_push_auth_to_queue(AuthDlgData *d){
+    if(serial_mode_queue == NULL){
+        serial_mode_queue = g_async_queue_new();
+    }
+    g_async_queue_push(serial_mode_queue, d);
+}
+
+AuthDlgData* serial_mode_pop_auth_from_queue(){
+    if(serial_mode_queue == NULL){
+        serial_mode_queue = g_async_queue_new();
+    }
+    return (AuthDlgData *) g_async_queue_pop(serial_mode_queue);
+}
+
+static void init_session(AuthDlgData *d);
+static void spawn_command_for_authentication(AuthDlgData *d);
 
 void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char * format_result){
         GIOChannel * write_channel = data->write_channel;
@@ -195,6 +222,17 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
     if (authorized || canceled) {
 		auth_dlg_data_run_and_free_task(d);
 		auth_dlg_data_free(d);
+        if(app__get_auth_handling_mode() == AuthHandlingMode_SERIE){
+            if(serial_mode_is_queue_empty()){
+                serial_mode_current_authentication = NULL;
+            } else {
+                AuthDlgData* data = serial_mode_pop_auth_from_queue();
+                data->status = AUTHENTICATING;
+                serial_mode_current_authentication = data;
+                spawn_command_for_authentication(data);
+                polkit_agent_session_initiate(data->session);
+            }
+        }
 		return;
 	}
 	g_object_unref(d->session);
@@ -202,6 +240,7 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
     g_autofree const char* message = request_message_authorization_not_authorized();
     blocks_mode_private_data_write_to_channel(d, message);
     init_session(d);
+    polkit_agent_session_initiate(d->session);
 
 }
 
@@ -236,7 +275,6 @@ static void init_session(AuthDlgData *d){
   g_signal_connect(d->session, "request", G_CALLBACK(on_session_request), d);
   g_signal_connect(d->session, "show-error", G_CALLBACK(on_session_show_error), d);
   g_signal_connect(d->session, "show-info", G_CALLBACK(on_session_show_info), d);
-  polkit_agent_session_initiate(d->session);
 
 }
 
@@ -299,9 +337,20 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     d->buffer = g_string_sized_new (1024);
     d->active_line = g_string_sized_new (1024);
     d->parser = json_parser_new ();
-    d->status = AUTHENTICATING;
     init_session(d);
-    spawn_command_for_authentication(d);
+    if(app__get_auth_handling_mode() == AuthHandlingMode_PARALLEL){
+        g_usleep(250000);
+        spawn_command_for_authentication(d);
+        polkit_agent_session_initiate(d->session);
+    } else if(serial_mode_current_authentication != NULL){
+        d->status = IN_QUEUE;
+        serial_mode_push_auth_to_queue(d);
+    } else {
+        d->status = AUTHENTICATING;
+        serial_mode_current_authentication = d;
+        spawn_command_for_authentication(d);
+        polkit_agent_session_initiate(d->session);
+    }
 }
 
 static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(listener),
