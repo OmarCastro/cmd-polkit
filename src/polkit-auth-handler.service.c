@@ -89,7 +89,7 @@ AuthDlgData* serie_mode_pop_auth_from_queue(){
     return (AuthDlgData *) g_async_queue_pop(serial_mode_queue);
 }
 
-static void init_session(AuthDlgData *d);
+static void build_session(AuthDlgData *d);
 static void spawn_command_for_authentication(AuthDlgData *d);
 
 void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char * format_result){
@@ -239,7 +239,7 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
 	d->session = NULL;
     g_autofree const char* message = request_message_authorization_not_authorized();
     blocks_mode_private_data_write_to_channel(d, message);
-    init_session(d);
+    build_session(d);
     polkit_agent_session_initiate(d->session);
 
 }
@@ -262,7 +262,7 @@ static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *tex
     log__verbose__polkit_session_show_info(text);
 }
 
-static void init_session(AuthDlgData *d){
+static void build_session(AuthDlgData *d){
   if (G_UNLIKELY(d->session)) {
           g_signal_handlers_disconnect_matched(d->session, G_SIGNAL_MATCH_DATA, 0, 0, NULL, NULL, d);
           polkit_agent_session_cancel(d->session);
@@ -337,7 +337,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     d->buffer = g_string_sized_new (1024);
     d->active_line = g_string_sized_new (1024);
     d->parser = json_parser_new ();
-    init_session(d);
+    build_session(d);
     if(app__get_auth_handling_mode() == AuthHandlingMode_PARALLEL){
         g_usleep(250000);
         spawn_command_for_authentication(d);
