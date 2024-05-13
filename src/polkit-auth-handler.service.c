@@ -71,18 +71,18 @@ struct _AuthDlgData {
 GAsyncQueue * serial_mode_queue = NULL;
 AuthDlgData * serial_mode_current_authentication = NULL;
 
-bool serial_mode_is_queue_empty(){
+bool serie_mode_is_queue_empty(){
     return serial_mode_queue == NULL || g_async_queue_length(serial_mode_queue) <= 0;
 }
 
-void serial_mode_push_auth_to_queue(AuthDlgData *d){
+void serie_mode_push_auth_to_queue(AuthDlgData *d){
     if(serial_mode_queue == NULL){
         serial_mode_queue = g_async_queue_new();
     }
     g_async_queue_push(serial_mode_queue, d);
 }
 
-AuthDlgData* serial_mode_pop_auth_from_queue(){
+AuthDlgData* serie_mode_pop_auth_from_queue(){
     if(serial_mode_queue == NULL){
         serial_mode_queue = g_async_queue_new();
     }
@@ -223,10 +223,10 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
 		auth_dlg_data_run_and_free_task(d);
 		auth_dlg_data_free(d);
         if(app__get_auth_handling_mode() == AuthHandlingMode_SERIE){
-            if(serial_mode_is_queue_empty()){
+            if(serie_mode_is_queue_empty()){
                 serial_mode_current_authentication = NULL;
             } else {
-                AuthDlgData* data = serial_mode_pop_auth_from_queue();
+                AuthDlgData* data = serie_mode_pop_auth_from_queue();
                 data->status = AUTHENTICATING;
                 serial_mode_current_authentication = data;
                 spawn_command_for_authentication(data);
@@ -344,7 +344,7 @@ static void initiate_authentication(PolkitAgentListener  *listener,
         polkit_agent_session_initiate(d->session);
     } else if(serial_mode_current_authentication != NULL){
         d->status = IN_QUEUE;
-        serial_mode_push_auth_to_queue(d);
+        serie_mode_push_auth_to_queue(d);
     } else {
         d->status = AUTHENTICATING;
         serial_mode_current_authentication = d;
