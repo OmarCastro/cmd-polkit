@@ -339,7 +339,6 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     d->parser = json_parser_new ();
     build_session(d);
     if(app__get_auth_handling_mode() == AuthHandlingMode_PARALLEL){
-        g_usleep(250000);
         spawn_command_for_authentication(d);
         polkit_agent_session_initiate(d->session);
     } else if(serial_mode_current_authentication != NULL){
