@@ -46,10 +46,13 @@
         <section class="section section--introduction" ss:markdown>
             ## How it works
 
-            It works by calling the defined command and communicate via stdin and stdout, the command receives the message from stdin and sends it by writing to stdout,
+            It works by calling the defined command and communicate via stdin and stdout, 
+            the command receives the message from stdin and sends it by writing to stdout,
             each line represents a message, the format used for communication is JSON.
 
-            The next figure show a sequence diagram of an authentication process
+            The next figure show a sequence diagram of an authentication process. The
+            "command" agent is the application to execute using the <code>--command</code>,
+            or <code>-c</code> argument
 
             <figure style="text-align: center;">
                 <img width="600" src="./seq-diagram-1.svg"></img>
@@ -58,23 +61,49 @@
 
         </section>
 
-        <section class="section section--introduction" ss:markdown>
+        <section class="section section--modes" ss:markdown>
             ## Mode
 
-            There are 2 modes to run the application, serial and parallel 
+            To run <code>cmd-polkit</code>, it is required to explicitly select the authentication mode;
+            serial and parallel. This section explains each mode usage. 
+
+            ### Serial
+
+
+            The serial mode, executed with `--serial`, or `-s` argument,
+            all polkit authentication are handled one at a time. 
 
             The next figure show a sequence diagram of an multiple authentication processes
-            using serial mode
+            using serial mode. You will note that even after requesting a second authentication
+            the command will only run after finishing the first authentication process.
 
             <figure style="text-align: center;">
-                <img width="600" src="./seq-diagram-serial.svg"></img>
+                <img width="800" src="./seq-diagram-serial.svg"></img>
                 <figcaption>Fig.2 - authentication process in serial mode</figcaption>
             </figure>
 
+            This is good for running GUI propmt applications that cannot have mutliple instances
+            at the same time, like [rofi](https://github.com/davatorium/rofi).
+
+            ### Parallel
+
+            The parallel mode, executed with `--parallel`, or `-p` argument,
+            Polkit authentication processes are handled in parallel. 
+
+            The next figure show a sequence diagram of an multiple authentication processes
+            using serial mode. Each command can handle the process independently.
+
             <figure style="text-align: center;">
-                <img width="600" src="./seq-diagram-parallel.svg"></img>
+                <img width="800" src="./seq-diagram-parallel.svg"></img>
                 <figcaption>Fig.3 - authentication process in parallel mode</figcaption>
             </figure>
+
+
+            This is good for running GUI propmt applications that can have mutliple instances.
+
+            It is up to the user to define which mode is compatible with the GUI application that he
+            wishes to use without needing to create and maintain a daemon for authentication in serie
+
         </section>
 
         <section class="section section--messages" ss:markdown>
@@ -84,15 +113,26 @@
             ### authentication message request
 
             When polkit request authentication, cmd-polkit will send a message 
-            to command stdin. It respects the following schema 
+            to command stdin that respects the following schema:
 
-            ```
+            <pre><code class="language-json">
             {
-                "action": "request password",
-                "prompt": string 
-                "message": string 
+              "action": "request password",
+              "prompt": string 
+              "message": string 
             }
-            ```
+            </code></pre>
+
+            - `action` is hardcoded to show `"request password"`
+            - `prompt` tha password input label, in other words, the prompt message to show to the user, just before the password input
+            - `message` is the the message to show to the user
+
+            To give an example when executing `pkexec echo 1` in a terminal with cmd-polkit active,
+            the message it is send to command is similar to the following code
+
+            <script type="text/plain" class="js-example">
+                {"action":"request password","prompt":"Password: ","message":"Authentication is needed to run `/usr/bin/echo 1' as the super user"}
+            </script>
 
             ### authentication message response
 
@@ -100,30 +140,28 @@
             a response from command stdout that respects the folloing schema,
             it will use the password to authenticate to polkit
 
-            ```
+            <pre><code class="language-json">
             {
                 "action": "authenticate",
                 "password": string 
             }
-            ```
+            </code></pre>
 
             ### authentication result message
 
             After authentication attempt is made is made, a message will be
             sent to command to show the result
 
-            ```
+            <pre><code class="language-json">
             {
                 "action": "authorization response",
                 "authorized": boolean 
             }
-            ```
+            </code></pre>
 
             If the authentication is successful, an SIGINT message is sent to command
             to finish the command, otherwise, another _authentication message request_
             is sent to command
-
-
         </section>
 
 
