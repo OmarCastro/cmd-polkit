@@ -62,13 +62,12 @@
         </section>
 
         <section class="section section--modes" ss:markdown>
-            ## Mode
+            ## Authentication handling mode
 
-            To run <code>cmd-polkit</code>, it is required to explicitly select the authentication mode;
-            serial and parallel. This section explains each mode usage. 
+            To run <code>cmd-polkit</code>, it is required to explicitly select the authentication handling
+            mode: serial or parallel. This section explains each mode usage. 
 
             ### Serial
-
 
             The serial mode, executed with `--serial`, or `-s` argument,
             all polkit authentication are handled one at a time. 
@@ -115,13 +114,11 @@
             When polkit request authentication, cmd-polkit will send a message 
             to command stdin that respects the following schema:
 
-            <pre><code class="language-json">
-            {
+            <pre><code class="language-json">{
               "action": "request password",
               "prompt": string 
               "message": string 
-            }
-            </code></pre>
+            }</code></pre>
 
             - `action` is hardcoded to show `"request password"`
             - `prompt` tha password input label, in other words, the prompt message to show to the user, just before the password input
@@ -140,33 +137,25 @@
             a response from command stdout that respects the folloing schema,
             it will use the password to authenticate to polkit
 
-            <pre><code class="language-json">
-            {
-                "action": "authenticate",
-                "password": string 
-            }
-            </code></pre>
+            <pre><code class="language-json">{
+              "action": "authenticate",
+              "password": string 
+            }</code></pre>
 
             ### authentication result message
 
             After authentication attempt is made is made, a message will be
             sent to command to show the result
 
-            <pre><code class="language-json">
-            {
-                "action": "authorization response",
-                "authorized": boolean 
-            }
-            </code></pre>
+            <pre><code class="language-json">{
+              "action": "authorization response",
+              "authorized": boolean 
+            }</code></pre>
 
             If the authentication is successful, an SIGINT message is sent to command
             to finish the command, otherwise, another _authentication message request_
             is sent to command
         </section>
-
-
-
     </div>
-        
     </body>
 </html>
