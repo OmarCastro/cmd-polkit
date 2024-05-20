@@ -87,7 +87,7 @@ async function buildDocs () {
   await createBadges()
   await Promise.all([
     exec(`${process.argv[0]} dev-tools/scripts/build-html.js index.html`),
-    // exec(`${process.argv[0]} buildfiles/scripts/build-html.js contributing.html`),
+    exec(`${process.argv[0]} dev-tools/scripts/build-html.js contributing.html`),
   ])
 
   logEndStage()
