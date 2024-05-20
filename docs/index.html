@@ -109,7 +109,7 @@
 
             ## Message schemas
 
-            ### authentication message request
+            ### Authentication request
 
             When polkit request authentication, cmd-polkit will send a message 
             to command stdin that respects the following schema:
@@ -131,7 +131,7 @@
                 {"action":"request password","prompt":"Password: ","message":"Authentication is needed to run `/usr/bin/echo 1' as the super user"}
             </script>
 
-            ### authentication message response
+            ### Authentication response
 
             After the _authentication message request_ is sent, it will expect
             a response from command stdout that respects the folloing schema,
@@ -142,7 +142,7 @@
               "password": string 
             }</code></pre>
 
-            ### authentication result message
+            ### Authentication result
 
             After authentication attempt is made is made, a message will be
             sent to command to show the result
