@@ -50,5 +50,5 @@ problem does not already exist.
 
 - You are familiar with Git.
 - For testing, you have valgrind installed
-- For documentation: you have NodeJs installed
+- For documentation: you have NodeJs installed (recommended to use the latest LTS version)
 
