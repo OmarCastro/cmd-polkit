@@ -52,3 +52,11 @@ problem does not already exist.
 - For testing, you have valgrind installed
 - For documentation: you have NodeJs installed (recommended to use the latest LTS version)
 
+## Development Workflow
+
+After cloning the project's code repository, you can run several commands that are the shell scripts in `dev-tools` folder.
+
+- `dev-tools/continuous-build.sh` builds the project and run tests automatically for time there is a code file change.
+- `dev-tools/github-action-build.sh` builds the project, tests, publishes test reports and builds documentation, used for github pages workflow.
+- `dev-tools/hot-reload.sh` builds the project and runs cmd-polkit using `examples/scripts/rofi-example.py` as the command. Each time a code file changes, rebuilds the project and restarts cmd-polkit with the updated code. Keep in mind that only one polkit agent is allowed at the same time.
+- `dev-tools/run` simply runs NodeJs scripts for documentation purposes, run `dev-tools/run help` to list the scripts
