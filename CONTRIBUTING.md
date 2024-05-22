@@ -60,3 +60,15 @@ After cloning the project's code repository, you can run several commands that a
 - `dev-tools/github-action-build.sh` builds the project, tests, publishes test reports and builds documentation, used for github pages workflow.
 - `dev-tools/hot-reload.sh` builds the project and runs cmd-polkit using `examples/scripts/rofi-example.py` as the command. Each time a code file changes, rebuilds the project and restarts cmd-polkit with the updated code. Keep in mind that only one polkit agent is allowed at the same time.
 - `dev-tools/run` simply runs NodeJs scripts for documentation purposes, run `dev-tools/run help` to list the scripts
+
+## Style Guide
+
+Unlike C, other languages have their own style guides to follow. So, in this project, the single most important rule when writing code is this: check the surrounding code and try to imitate it.
+
+As a maintainer it is dismaying to receive a patch that is obviously in a different coding style to the surrounding code. This is disrespectful, like someone tromping into a spotlessly-clean house with muddy shoes.
+
+So, whatever this document recommends, if there is already written code and you are contributing to it, keep its current style consistent even if it is not your favorite style.
+
+Most importantly, do not make your first contribution to a project a change in the coding style to suit your taste. That is incredibly disrespectful.
+
+The only thing we enforce is consistency, if you wish to follow a style guide, we recommend to use Gnome coding syle in https://developer.gnome.org/documentation/guidelines/programming/coding-style.html as both polkit and gtk follows this style guide. Due to it, we followed the same style as to maintain consistency with the code and the API.
