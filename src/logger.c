@@ -24,9 +24,6 @@ int currentLine = 0;
 #define UPDATE_CURRENT_SOURCE_LOCATION() currentFile = file; currentFunction = function; currentLine = line;
 #define CHECK_VERBOSE() if(!verbose_logs || silenced_logs) { return; }
 
-
-struct LogMessage {};
-
 static void log__fail_cmdline(const char* text);
 static void log__verbose_formatted(const char* format, ...);
 static inline void log__verbose_raw(const char* text){ log__verbose_formatted("%s", text); }
