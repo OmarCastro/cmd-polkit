@@ -44,10 +44,6 @@ const tasks = {
     description: 'build documentation',
     cb: async () => { await buildDocs(); process.exit(0) },
   },
-  lint: {
-    description: 'validates the code',
-    cb: async () => { await execlintCode(); process.exit(0) },
-  },
   help: helpTask,
   '--help': helpTask,
   '-h': helpTask,
@@ -98,20 +94,6 @@ async function createBadges () {
   await makeBadgeForCoverages(pathFromProject('build-docs/reports'))
   await makeBadgeForTestResult(pathFromProject('build-docs/reports'))
 }
-
-async function execlintCode () {
-  logStartStage('lint', 'lint using eslint')
-  const returnCodeLint = await lintCode({ onlyChanged: false }, { fix: true })
-  logStage('lint using stylelint')
-  const returnStyleLint = await lintStyles({ onlyChanged: false })
-  logStage('validating json')
-  const returnJsonLint = await validateJson({ onlyChanged: false })
-  logStage('validating yaml')
-  const returnYamlLint = await validateYaml({ onlyChanged: false })
-  logEndStage()
-  return returnCodeLint + returnStyleLint + returnJsonLint + returnYamlLint
-}
-
 
 // @section 4 utils
 
@@ -174,105 +156,6 @@ function logStartStage (jobname, stage) {
 // @section 5 Dev server
 
 // @section 6 linters
-
-async function lintCode ({ onlyChanged }, options) {
-  const esLintFilePatterns = ['**/*.js']
-
-  const finalFilePatterns = onlyChanged ? await listChangedFilesMatching(...esLintFilePatterns) : esLintFilePatterns
-  if (finalFilePatterns.length <= 0) {
-    process.stdout.write('no files to lint. ')
-    return 0
-  }
-  const { ESLint } = await import('eslint')
-  const eslint = new ESLint(options)
-  const formatter = await eslint.loadFormatter()
-  const results = await eslint.lintFiles(finalFilePatterns)
-
-  if (options != null && options.fix === true) {
-    await ESLint.outputFixes(results)
-  }
-
-  const filesLinted = results.length
-  process.stdout.write(`linted ${filesLinted} files. `)
-
-  const errorCount = results.reduce((acc, result) => acc + result.errorCount, 0)
-
-  const resultLog = formatter.format(results)
-  if (resultLog) {
-    console.log('')
-    console.log(resultLog)
-  } else {
-    process.stdout.write('OK...')
-  }
-  return errorCount ? 1 : 0
-}
-
-async function lintStyles ({ onlyChanged }) {
-  const styleLintFilePatterns = ['**/*.css']
-  const finalFilePatterns = onlyChanged ? await listChangedFilesMatching(...styleLintFilePatterns) : styleLintFilePatterns
-  if (finalFilePatterns.length <= 0) {
-    process.stdout.write('no stylesheets to lint. ')
-    return 0
-  }
-  const { default: stylelint } = await import('stylelint')
-  const result = await stylelint.lint({ files: finalFilePatterns })
-  const filesLinted = result.results.length
-  process.stdout.write(`linted ${filesLinted} files. `)
-  const stringFormatter = await stylelint.formatters.string
-
-  const output = stringFormatter(result.results)
-  if (output) {
-    console.log('\n' + output)
-  } else {
-    process.stdout.write('OK...')
-  }
-
-  return result.errored ? 1 : 0
-}
-
-async function validateJson ({ onlyChanged }) {
-  return await validateFiles({
-    patterns: ['*.json'],
-    onlyChanged,
-    validation: async (file) => JSON.parse(await fs.readFile(file, 'utf8')),
-  })
-}
-
-async function validateYaml ({ onlyChanged }) {
-  const { load } = await import('js-yaml')
-  return await validateFiles({
-    patterns: ['*.yml', '*.yaml'],
-    onlyChanged,
-    validation: async (file) => load(await fs.readFile(file, 'utf8')),
-  })
-}
-
-async function validateFiles ({ patterns, onlyChanged, validation }) {
-  const fileList = onlyChanged ? await listChangedFilesMatching(...patterns) : await listNonIgnoredFiles({ patterns })
-  if (fileList.length <= 0) {
-    process.stdout.write('no files to lint. ')
-    return 0
-  }
-  let errorCount = 0
-  const outputLines = []
-  for (const file of fileList) {
-    try {
-      await validation(file)
-    } catch (e) {
-      errorCount++
-      outputLines.push(`error in file "${file}": ${e.message}`)
-    }
-  }
-  process.stdout.write(`validated ${fileList.length} files. `)
-  const output = outputLines.join('\n')
-  if (output) {
-    console.log('\n' + outputLines)
-  } else {
-    process.stdout.write('OK...')
-  }
-
-  return errorCount ? 1 : 0
-}
 
 // @section 7 minifiers
 
