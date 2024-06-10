@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2024 Omar Castro
 #include "glib.h"
+#include "glibconfig.h"
 #include <stdbool.h>
 #define _GNU_SOURCE
 #include <grp.h>
@@ -327,6 +328,28 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 	log__verbose__polkit_auth_identities(identities);
 	log__verbose__polkit_auth_details(details);
 
+    GError *error = NULL;
+    g_autoptr(PolkitAuthority) authority = polkit_authority_get_sync(NULL, &error);
+    if(error == NULL){
+        GList* actions = polkit_authority_enumerate_actions_sync (authority,NULL,&error);
+        if(error == NULL){
+            for(GList *elem = actions; elem; elem = elem->next) {
+                g_autoptr(PolkitActionDescription) action_description = elem->data;
+
+                const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
+                if(strcmp(action_description_action_id, action_id) != 0){
+                    printf("action id:::%s\n", action_description_action_id);
+                    printf("action description:::%s\n", polkit_action_description_get_description(action_description));
+                    printf("action message:::%s\n", polkit_action_description_get_message(action_description));
+                    printf("action vendor name:::%s\n", polkit_action_description_get_vendor_name(action_description));
+                    printf("action vendor url:::%s\n", polkit_action_description_get_vendor_url(action_description));
+                    printf("action icon name:::%s\n", polkit_action_description_get_icon_name(action_description));
+                }
+            }
+            g_list_free(actions);
+        }
+
+    }
 	AuthDlgData *d = g_slice_new0(AuthDlgData);
 
 	d->task = g_task_new(listener, cancellable, callback, user_data);
