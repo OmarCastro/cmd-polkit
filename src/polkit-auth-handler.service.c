@@ -93,15 +93,15 @@ AuthDlgData* serie_mode_pop_auth_from_queue(){
 static void build_session(AuthDlgData *d);
 static void spawn_command_for_authentication(AuthDlgData *d);
 
-void blocks_mode_private_data_write_to_channel ( AuthDlgData *data, const char * format_result){
+void auth_dialog_data_write_to_channel ( AuthDlgData *data, const char * message){
         GIOChannel * write_channel = data->write_channel;
         if(data->write_channel == NULL){
             //gets here when the script exits or there was an error loading it
             return;
         }
-        log__verbose__writing_to_command_stdin(format_result);
+        log__verbose__writing_to_command_stdin(message);
         gsize bytes_witten;
-        g_io_channel_write_chars(write_channel, format_result, -1, &bytes_witten, &data->error);
+        g_io_channel_write_chars(write_channel, message, -1, &bytes_witten, &data->error);
         g_io_channel_write_unichar(write_channel, '\n', &data->error);
         g_io_channel_flush(write_channel, &data->error);
 }
@@ -218,7 +218,7 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
     if(authorized){
         d->status = AUTHORIZED;
         g_autofree const char* message = request_message_authorization_authorized();
-        blocks_mode_private_data_write_to_channel(d, message);
+        auth_dialog_data_write_to_channel(d, message);
     }
     if (authorized || canceled) {
 		auth_dlg_data_run_and_free_task(d);
@@ -234,12 +234,13 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
                 polkit_agent_session_initiate(data->session);
             }
         }
+
 		return;
 	}
 	g_object_unref(d->session);
 	d->session = NULL;
     g_autofree const char* message = request_message_authorization_not_authorized();
-    blocks_mode_private_data_write_to_channel(d, message);
+    auth_dialog_data_write_to_channel(d, message);
     build_session(d);
     polkit_agent_session_initiate(d->session);
 
@@ -249,7 +250,7 @@ static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req, 
 {
 	log__verbose__polkit_session_request(req, visibility);
     g_autofree const char *write_message = request_message_request_password(req, d->message);
-    blocks_mode_private_data_write_to_channel(d, write_message);
+    auth_dialog_data_write_to_channel(d, write_message);
 }
 
 static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
@@ -337,13 +338,8 @@ static void initiate_authentication(PolkitAgentListener  *listener,
                 g_autoptr(PolkitActionDescription) action_description = elem->data;
 
                 const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
-                if(strcmp(action_description_action_id, action_id) != 0){
-                    printf("action id:::%s\n", action_description_action_id);
-                    printf("action description:::%s\n", polkit_action_description_get_description(action_description));
-                    printf("action message:::%s\n", polkit_action_description_get_message(action_description));
-                    printf("action vendor name:::%s\n", polkit_action_description_get_vendor_name(action_description));
-                    printf("action vendor url:::%s\n", polkit_action_description_get_vendor_url(action_description));
-                    printf("action icon name:::%s\n", polkit_action_description_get_icon_name(action_description));
+                if(strcmp(action_description_action_id, action_id) == 0){
+                    log__verbose__polkit_action_description(action_description);
                 }
             }
             g_list_free(actions);
