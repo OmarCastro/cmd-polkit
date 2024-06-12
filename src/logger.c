@@ -152,6 +152,18 @@ void log__verbose__polkit_auth_details(MACRO__SOURCE_LOCATION_PARAMS, PolkitDeta
   g_strfreev(keys);
 }
 
+void log__verbose__polkit_action_description(MACRO__SOURCE_LOCATION_PARAMS, PolkitActionDescription* const action_description){
+  CHECK_VERBOSE()
+  UPDATE_CURRENT_SOURCE_LOCATION()
+
+  log__verbose_raw("Polkit action description");
+  log__verbose_formatted("└─ id: %s", polkit_action_description_get_action_id(action_description));
+  log__verbose_formatted("└─ description: %s", polkit_action_description_get_description(action_description));
+  log__verbose_formatted("└─ message: %s", polkit_action_description_get_message(action_description));
+  log__verbose_formatted("└─ vendor name: %s", polkit_action_description_get_vendor_name(action_description));
+  log__verbose_formatted("└─ vendor url: %s", polkit_action_description_get_vendor_url(action_description));
+  log__verbose_formatted("└─ icon name: %s", polkit_action_description_get_icon_name(action_description));
+}
 
 void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled){
   CHECK_VERBOSE()

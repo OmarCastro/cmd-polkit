@@ -34,6 +34,7 @@ void log__verbose__init_polkit_listener(MACRO__SOURCE_LOCATION_PARAMS);
 void log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_PARAMS, const char *action_id, const char *message, const char *icon_name, const char * cookie );
 void log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_PARAMS, const GList* const list);
 void log__verbose__polkit_auth_details(MACRO__SOURCE_LOCATION_PARAMS, PolkitDetails* const details);
+void log__verbose__polkit_action_description(MACRO__SOURCE_LOCATION_PARAMS, PolkitActionDescription* const action_description);
 void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled);
 void log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_PARAMS, const char *text);
 void log__verbose__polkit_session_show_info(MACRO__SOURCE_LOCATION_PARAMS, const char *text);
@@ -51,6 +52,7 @@ void log__verbose__reading_command_stdout(MACRO__SOURCE_LOCATION_PARAMS);
 #define log__verbose__init_polkit_authentication(action_id, message, icon_name, cookie)   log__verbose__init_polkit_authentication(MACRO__SOURCE_LOCATION_VALUES, action_id, message, icon_name, cookie)
 #define log__verbose__polkit_auth_identities(list)                                        log__verbose__polkit_auth_identities(MACRO__SOURCE_LOCATION_VALUES, list)
 #define log__verbose__polkit_auth_details(details)                                        log__verbose__polkit_auth_details(MACRO__SOURCE_LOCATION_VALUES, details)
+#define log__verbose__polkit_action_description(action_description)                       log__verbose__polkit_action_description(MACRO__SOURCE_LOCATION_VALUES, action_description)
 #define log__verbose__polkit_session_completed(authorized, canceled)                      log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_VALUES, authorized, canceled)
 #define log__verbose__polkit_session_show_error(text)                                     log__verbose__polkit_session_show_error(MACRO__SOURCE_LOCATION_VALUES, text)
 #define log__verbose__polkit_session_show_info(text)                                      log__verbose__polkit_session_show_info(MACRO__SOURCE_LOCATION_VALUES, text)
