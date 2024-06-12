@@ -62,13 +62,13 @@ static void test_all_request_messages_are_single_line (Fixture *fixture, gconstp
 	g_autofree const gchar* unauthorized_message = request_message_authorization_not_authorized();
 	g_assert_true(has_no_newlines(unauthorized_message));
 
-	g_autofree const gchar* request_pass_message = request_message_request_password("\n", "\n");
+	g_autofree const gchar* request_pass_message = request_message_request_password("\n", "\n", NULL);
 	g_assert_true(has_no_newlines(request_pass_message));
 }
 
 static void test_request_message_request_password_is_escaped_correctly (Fixture *fixture, gconstpointer user_data) {
-	g_autofree const gchar* request_pass_message = request_message_request_password("\n\"", "\n\"");
-	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\"}");
+	g_autofree const gchar* request_pass_message = request_message_request_password("\n\"", "\n\"", NULL);
+	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"action description\":null}");
 }
 
 static void test_default_logs (Fixture *fixture, gconstpointer user_data) {

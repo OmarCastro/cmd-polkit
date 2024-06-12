@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2024 Omar Castro
+#include "glib-object.h"
 #include "glib.h"
 #include "glibconfig.h"
 #include <stdbool.h>
@@ -41,6 +42,7 @@ typedef enum {
 typedef struct _AuthDlgData AuthDlgData;
 struct _AuthDlgData {
 	PolkitAgentSession *session;
+    PolkitActionDescription* action_description;
 	gchar *action_id;
     gchar *cookie;
     gchar *message;
@@ -136,6 +138,9 @@ static void auth_dlg_data_free(AuthDlgData *d)
     if(error){
         fprintf(stderr, "error closing read channel of pid %d: %s\n", d->cmd_pid, error->message);
         g_error_free ( error );
+    }
+    if(d->action_description != NULL){
+        g_object_unref(d->action_description);
     }
     g_io_channel_unref(d->read_channel);
     g_string_free(d->active_line, true);
@@ -249,7 +254,7 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
 static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req, gboolean visibility, AuthDlgData *d)
 {
 	log__verbose__polkit_session_request(req, visibility);
-    g_autofree const char *write_message = request_message_request_password(req, d->message);
+    g_autofree const char *write_message = request_message_request_password(req, d->message, d->action_description);
     auth_dialog_data_write_to_channel(d, write_message);
 }
 
@@ -329,6 +334,8 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 	log__verbose__polkit_auth_identities(identities);
 	log__verbose__polkit_auth_details(details);
 
+	AuthDlgData *d = g_slice_new0(AuthDlgData);
+
     GError *error = NULL;
     g_autoptr(PolkitAuthority) authority = polkit_authority_get_sync(NULL, &error);
     if(error == NULL){
@@ -336,17 +343,22 @@ static void initiate_authentication(PolkitAgentListener  *listener,
         if(error == NULL){
             for(GList *elem = actions; elem; elem = elem->next) {
                 g_autoptr(PolkitActionDescription) action_description = elem->data;
+                if(d->action_description != NULL){
+                    // continue to g_object_unref the remaining elements on the list, as they are required
+                    // before freeing the `actions` GList 
+                    continue; 
+                }
 
                 const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
                 if(strcmp(action_description_action_id, action_id) == 0){
                     log__verbose__polkit_action_description(action_description);
+                    g_object_ref(action_description);
+                    d->action_description = action_description;
                 }
             }
             g_list_free(actions);
         }
-
     }
-	AuthDlgData *d = g_slice_new0(AuthDlgData);
 
 	d->task = g_task_new(listener, cancellable, callback, user_data);
     d->action_id = g_strdup(action_id);

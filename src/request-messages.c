@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-2.1-or-later
 // Copyright (C) 2024 Omar Castro
 #include <json-glib/json-glib.h>
+#include <time.h>
 #include "request-messages.h"
 
 
@@ -13,7 +14,11 @@ const gchar * request_message_authorization_not_authorized(){
 
 }
 
-const gchar * request_message_request_password(const gchar * prompt, const gchar * message){
+const gchar * request_message_request_password(    
+    const gchar * prompt,
+    const gchar * message,
+    PolkitActionDescription* action_description
+){
     g_autoptr(JsonBuilder) builder = json_builder_new ();
 
     json_builder_begin_object (builder);
@@ -26,6 +31,34 @@ const gchar * request_message_request_password(const gchar * prompt, const gchar
 
     json_builder_set_member_name (builder, "message");
     json_builder_add_string_value (builder, message);
+
+    json_builder_set_member_name(builder, "action description");
+    if(action_description == NULL){
+        json_builder_add_null_value(builder);
+    } else {
+        json_builder_begin_object (builder);
+        json_builder_set_member_name (builder, "id");
+        json_builder_add_string_value (builder, polkit_action_description_get_action_id(action_description));
+
+        json_builder_set_member_name (builder, "description");
+        json_builder_add_string_value (builder, polkit_action_description_get_description(action_description));
+
+        json_builder_set_member_name (builder, "message");
+        json_builder_add_string_value (builder, polkit_action_description_get_message(action_description));
+
+        json_builder_set_member_name (builder, "vendor name");
+        json_builder_add_string_value (builder, polkit_action_description_get_vendor_name(action_description));
+
+        json_builder_set_member_name (builder, "vendor url");
+        json_builder_add_string_value (builder, polkit_action_description_get_vendor_url(action_description));
+
+        json_builder_set_member_name (builder, "icon name");
+        json_builder_add_string_value (builder, polkit_action_description_get_icon_name(action_description));
+
+
+        json_builder_end_object (builder);
+
+    }
 
     json_builder_end_object (builder);
 
