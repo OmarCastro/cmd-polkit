@@ -118,17 +118,32 @@
               "action": "request password",
               "prompt": string 
               "message": string 
+              "action description": null | {
+                "id": string
+                "description": string
+                "message": string
+                "vendor name": string
+                "vendor url": string
+                "icon name": string
+              }
             }</code></pre>
 
             - `action` is hardcoded to show `"request password"`
             - `prompt` tha password input label, in other words, the prompt message to show to the user, just before the password input
             - `message` is the the message to show to the user
+            - `action description` represents the description of the polkit action that request the prompt, respects https://www.freedesktop.org/software/polkit/docs/0.115/PolkitActionDescription.html#polkit-action-description-get-annotation, more about actions on https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
+                - `id` is the polkit action ID
+                - `description` A human readable description of the action, e.g. “Install unsigned software”. 
+                - `message` A human readable message displayed to the user when asking for credentials when authentication is needed, similar but not always equal to root `message`. 
+                - `vendor name` is the name of the project or vendor that is supplying the action. 
+                - `vendor url` is the url of the project or vendor that is supplying the action.
+                - `icon name` is the icon representing the project or vendor that is supplying the actions.
 
             To give an example when executing `pkexec echo 1` in a terminal with cmd-polkit active,
             the message it is send to command is similar to the following code
 
             <script type="text/plain" class="js-example">
-                {"action":"request password","prompt":"Password: ","message":"Authentication is needed to run `/usr/bin/echo 1' as the super user"}
+                {"action":"request password","prompt":"Password: ","message":"Authentication is needed to run `/usr/bin/echo 1' as the super user","action description":{"id":"org.freedesktop.policykit.exec","description":"Run a program as another user","message":"Authentication is required to run a program as another user","vendor name":"The polkit project","vendor url":"http://www.freedesktop.org/wiki/Software/polkit/","icon name":""}}
             </script>
 
             ### Authentication response
