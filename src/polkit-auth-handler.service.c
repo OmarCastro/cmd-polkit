@@ -337,15 +337,16 @@ static void initiate_authentication(PolkitAgentListener  *listener,
 	AuthDlgData *d = g_slice_new0(AuthDlgData);
 
     GError *error = NULL;
-    g_autoptr(PolkitAuthority) authority = polkit_authority_get_sync(NULL, &error);
+    PolkitAuthority* authority = polkit_authority_get_sync(NULL, &error);
     if(error == NULL){
         GList* actions = polkit_authority_enumerate_actions_sync (authority,NULL,&error);
         if(error == NULL){
             for(GList *elem = actions; elem; elem = elem->next) {
-                g_autoptr(PolkitActionDescription) action_description = elem->data;
+                PolkitActionDescription* action_description = elem->data;
                 if(d->action_description != NULL){
                     // continue to g_object_unref the remaining elements on the list, as they are required
                     // before freeing the `actions` GList 
+                    g_object_unref(action_description);
                     continue; 
                 }
 
@@ -355,9 +356,12 @@ static void initiate_authentication(PolkitAgentListener  *listener,
                     g_object_ref(action_description);
                     d->action_description = action_description;
                 }
+
+                g_object_unref(action_description);
             }
             g_list_free(actions);
         }
+        g_object_unref(authority);
     }
 
 	d->task = g_task_new(listener, cancellable, callback, user_data);
