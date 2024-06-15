@@ -29,7 +29,7 @@ char * test_argv[] = {
 };
 
 
-static void test_set_up (Fixture *fixture, gconstpointer user_data){
+static void test_set_up ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data){
 	reset_logs();
 	setup_gtk_mock();
 	reset_lazy_init_gtk();
@@ -37,7 +37,7 @@ static void test_set_up (Fixture *fixture, gconstpointer user_data){
 
 }
 
-static void test_tear_down (Fixture *fixture, gconstpointer user_data){
+static void test_tear_down ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data){
 	app__reset();
 }
 
@@ -52,7 +52,7 @@ gboolean has_no_newlines(const gchar *str){
 	return true;
 }
 
-static void test_all_request_messages_are_single_line (Fixture *fixture, gconstpointer user_data) {
+static void test_all_request_messages_are_single_line ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	// failsafe check
 	g_assert_false(has_no_newlines("lorem\nipsum"));
 
@@ -66,12 +66,12 @@ static void test_all_request_messages_are_single_line (Fixture *fixture, gconstp
 	g_assert_true(has_no_newlines(request_pass_message));
 }
 
-static void test_request_message_request_password_is_escaped_correctly (Fixture *fixture, gconstpointer user_data) {
+static void test_request_message_request_password_is_escaped_correctly ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	g_autofree const gchar* request_pass_message = request_message_request_password("\n\"", "\n\"", NULL);
 	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"action description\":null}");
 }
 
-static void test_default_logs (Fixture *fixture, gconstpointer user_data) {
+static void test_default_logs ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__fail_cmdline__command_required();
 	log__fail_cmdline__either_parallel_or_series();
 	log__fail_cmdline__parallel_or_series_required();
@@ -120,7 +120,7 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
 
-static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
+static void test_silenced_logs ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__silence();
 	log__fail_cmdline__command_required();
 	log__fail_cmdline__either_parallel_or_series();
@@ -130,7 +130,7 @@ static void test_silenced_logs (Fixture *fixture, gconstpointer user_data) {
 	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
 
-static void test_verbose_logs (Fixture *fixture, gconstpointer user_data) {
+static void test_verbose_logs ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	log__fail_cmdline__command_required();
 	log__fail_cmdline__either_parallel_or_series();
@@ -203,7 +203,7 @@ Vrbos:test_verbose_logs:└─ visibility: no\n\
 
 
 
-static void test_log_verbose_init_polkit_authentication (Fixture *fixture, gconstpointer user_data) {
+static void test_log_verbose_init_polkit_authentication ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	const gchar *action_id = "org.freedesktop.policykit.exec";
 	const gchar *message = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
@@ -220,7 +220,7 @@ Vrbos:test_log_verbose_init_polkit_authentication:└─ cookie    : 3-974232894
 ");
 }
 
-static void test_log_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
+static void test_log_polkit_auth_identities ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	PolkitIdentity * user = polkit_unix_user_new(0);
 	PolkitIdentity * group = polkit_unix_group_new(0);
@@ -239,7 +239,7 @@ Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"other\",\"value\":\"uni
 	g_list_free_full(list, g_object_unref);
 }
 
-static void test_log_invalid_polkit_auth_identities (Fixture *fixture, gconstpointer user_data) {
+static void test_log_invalid_polkit_auth_identities ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	GList *list = NULL;
 	GList *invalidTypeObject = g_list_alloc();
@@ -257,7 +257,7 @@ Vrbos:test_log_invalid_polkit_auth_identities:└─ {\"type\":\"error\",\"error
 
 
 
-static void test_log_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
+static void test_log_empty_polkit_details ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	PolkitDetails* details = polkit_details_new();
 	log__verbose__polkit_auth_details(details);
@@ -268,7 +268,7 @@ Vrbos:test_log_empty_polkit_details:└─ (empty)\n\
 	g_object_unref(details);
 }
 
-static void test_log_non_empty_polkit_details (Fixture *fixture, gconstpointer user_data) {
+static void test_log_non_empty_polkit_details ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	PolkitDetails* details = polkit_details_new();
 	polkit_details_insert(details, "key 1", "value");
@@ -282,7 +282,7 @@ Vrbos:test_log_non_empty_polkit_details:└─ lorem: ipsum\n\
 	g_object_unref(details);
 }
 
-static void test_log_polkit_session_completed (Fixture *fixture, gconstpointer user_data) {
+static void test_log_polkit_session_completed ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
 	log__verbose__polkit_session_completed(false, false);
 	log__verbose__polkit_session_completed(false, true);
@@ -300,17 +300,17 @@ nVrbos:test_log_polkit_session_completed:└─ {\"authorized\": \"yes\", \"canc
 ");
 }
 
-static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions (Fixture *fixture, gconstpointer user_data) {
+static void test_accepted_action_value_of_str_returns_expected_values_on_valid_actions ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
 	g_assert_true(accepted_action_value_of_str("authenticate") == AcceptedAction_AUTHENTICATE);
 }
 
-static void test_accepted_action_value_of_str_returns_unknown_on_invalid_actions (Fixture *fixture, gconstpointer user_data) {
+static void test_accepted_action_value_of_str_returns_unknown_on_invalid_actions ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	g_assert_true(accepted_action_value_of_str("unknown") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str(NULL) == AcceptedAction_UNKNOWN);
 }
 
-static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixture, gconstpointer user_data) {
+static void test_accepted_action_value_of_str_is_case_sensitive ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	g_assert_true(accepted_action_value_of_str("cancel") == AcceptedAction_CANCEL);
 	g_assert_true(accepted_action_value_of_str("Cancel") == AcceptedAction_UNKNOWN);
 	g_assert_true(accepted_action_value_of_str("CANCEL") == AcceptedAction_UNKNOWN);
@@ -321,7 +321,7 @@ static void test_accepted_action_value_of_str_is_case_sensitive (Fixture *fixtur
 	g_assert_true(accepted_action_value_of_str("AUTHENTICATE") == AcceptedAction_UNKNOWN);
 }
 
-static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer user_data) {
+static void test_json_node_get_string_or_else ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	const gchar* text = "{\
 		\"true\":true,\
 		\"false\": false,\
@@ -343,7 +343,7 @@ static void test_json_node_get_string_or_else (Fixture *fixture, gconstpointer u
 	g_assert_cmpstr(json_node_get_string_or_else( json_object_get_member(node, "null") , "test") ,==, "test");
 }
 
-static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpointer user_data) {
+static void test_json_node_get_string_member_or_else ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	const gchar* text = "{\
 		\"true\":true,\
 		\"false\": false,\
@@ -365,26 +365,26 @@ static void test_json_node_get_string_member_or_else (Fixture *fixture, gconstpo
 	g_assert_cmpstr(json_object_get_string_member_or_else( node, "null" , "test") ,==, "test");
 }
 
-static void test_error_message_dialog_inits_once (Fixture *fixture, gconstpointer user_data) {
+static void test_error_message_dialog_inits_once ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	lazy_init_gtk();
 	lazy_init_gtk();
 	g_assert_true(called_times_gtk_init() == 1);
 }
 
-static void test_error_message_dialog_runs_gtk_dialog (Fixture *fixture, gconstpointer user_data) {
+static void test_error_message_dialog_runs_gtk_dialog ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	show_error_message_format("hello %s", "world");
 	lazy_init_gtk(); 
 	lazy_init_gtk();
 	g_assert_true(called_times_gtk_init() == 1);
 }
 
-static void test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init (Fixture *fixture, gconstpointer user_data) {
+static void test_polkit_auth_handler_CmdPkAgentPolkitListenerClass_init ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	PolkitAgentListener* listener = cmd_pk_agent_polkit_listener_new();
 	g_object_unref(listener);
 	// if there is no error, this passes
 }
 
-static void test_app_init_without_arguments_shows_help_message(Fixture *fixture, gconstpointer user_data) {
+static void test_app_init_without_arguments_shows_help_message([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	char* argv[] = {
 		"cmd-polkit-agent", 
 		NULL
@@ -408,7 +408,7 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
 
-static void test_app_init_with_invalid_arguments_shows_help_message(Fixture *fixture, gconstpointer user_data) {
+static void test_app_init_with_invalid_arguments_shows_help_message([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	char* argv[] = {
 		"cmd-polkit-agent", 
 		"--lorem", 
@@ -435,7 +435,7 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
 
-static void test_app_init_without_serial_and_parallel_shows_error(Fixture *fixture, gconstpointer user_data) {
+static void test_app_init_without_serial_and_parallel_shows_error([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	char* argv[] = {
 		"cmd-polkit-agent", 
 		"-c", 
@@ -462,7 +462,7 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 }
 
 
-static void test_app_init_with_both_serial_and_parallel_shows_error(Fixture *fixture, gconstpointer user_data) {
+static void test_app_init_with_both_serial_and_parallel_shows_error([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	char* argv[] = {
 		"cmd-polkit-agent", 
 		"-sp",
@@ -490,7 +490,7 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 }
 
 
-static void test_app_init_with_blank_command_line_shows_error(Fixture *fixture, gconstpointer user_data) {
+static void test_app_init_with_blank_command_line_shows_error([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	char* argv[] = {
 		"cmd-polkit-agent", 
 		"-sp",
@@ -517,10 +517,6 @@ A tool that allows to easily customize the UI used to authenticate on polkit\n\
 	g_assert_cmpstr(get_stdout()->str, ==, "");
 }
 
-
-
-
-#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
 int main (int argc, char *argv[]) {
 

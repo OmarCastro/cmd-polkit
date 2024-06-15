@@ -37,7 +37,7 @@ int quitloop(gpointer fixture_ptr){
 
 }
 
-void finish_autentication_and_exit(GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
+void finish_autentication_and_exit([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
 	Fixture *fixture = fixture_ptr;
 	PolkitAgentListener *listener = fixture->listener;
 	GError *error = NULL;
@@ -73,7 +73,7 @@ static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 }
 
 
-static void test_polkit_auth_handler_authentication_success (Fixture *fixture, gconstpointer user_data) {
+static void test_polkit_auth_handler_authentication_success (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	test_argv[3] = "bash ./assets/test_response_command.sh";
 	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
@@ -81,7 +81,7 @@ static void test_polkit_auth_handler_authentication_success (Fixture *fixture, g
 	g_main_loop_run(fixture->loop);
 }
 
-static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, gconstpointer user_data) {
+static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	test_argv[3] = "bash ./assets/test_response_cancel.sh";
 	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
@@ -89,7 +89,7 @@ static void test_polkit_auth_handler_authentication_cancel (Fixture *fixture, gc
 	g_main_loop_run(fixture->loop);
 }
 
-static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture, gconstpointer user_data) {
+static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	test_argv[3] = "bash ./assets/test_response_fail_retry.sh";
 	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
@@ -98,11 +98,11 @@ static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture
 }
 
 
-static void test_set_up (Fixture *fixture, gconstpointer user_data){
+static void test_set_up ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data){
 	app__reset();
 }
 
-static void test_tear_down (Fixture *fixture, gconstpointer user_data){
+static void test_tear_down (Fixture *fixture, [[maybe_unused]] gconstpointer user_data){
 	if(fixture->listener != NULL){
 		g_object_unref(fixture->listener);
 		fixture->listener = NULL;
