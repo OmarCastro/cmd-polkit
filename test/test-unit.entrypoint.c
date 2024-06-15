@@ -68,7 +68,7 @@ static void test_all_request_messages_are_single_line ([[maybe_unused]] Fixture 
 
 static void test_request_message_request_password_is_escaped_correctly ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	g_autofree const gchar* request_pass_message = request_message_request_password("\n\"", "\n\"", NULL);
-	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"action description\":null}");
+	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"polkit action\":null}");
 }
 
 static void test_default_logs ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {

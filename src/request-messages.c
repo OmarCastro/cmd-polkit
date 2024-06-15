@@ -32,7 +32,7 @@ const gchar * request_message_request_password(
     json_builder_set_member_name (builder, "message");
     json_builder_add_string_value (builder, message);
 
-    json_builder_set_member_name(builder, "action description");
+    json_builder_set_member_name(builder, "polkit action");
     if(action_description == NULL){
         json_builder_add_null_value(builder);
     } else {
