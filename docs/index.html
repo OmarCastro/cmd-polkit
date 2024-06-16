@@ -131,7 +131,7 @@
             - `action` is hardcoded to show `"request password"`
             - `prompt` tha password input label, in other words, the prompt message to show to the user, just before the password input
             - `message` is the the message to show to the user
-            - `polkit action` represents the polkit action related to the application that requests the prompt, respects https://www.freedesktop.org/software/polkit/docs/0.115/PolkitActionDescription.html#polkit-action-description-get-annotation, more about actions on https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html
+            - `polkit action` represents the polkit action related to the application that requests the authentication. Respects <cite><a href="https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation"></a>PolkitActionDescription</cite><sup><a href="#cite-1">[1]</a></sup> more about actions on the Polkit documentation<sup><a href="#cite-2">[2]</a></sup>
                 - `id` is the polkit action ID
                 - `description` A human readable description of the action, e.g. “Install unsigned software”. 
                 - `message` A human readable message displayed to the user when asking for credentials when authentication is needed, similar but not always equal to root `message`. 
@@ -167,9 +167,15 @@
               "authorized": boolean 
             }</code></pre>
 
-            If the authentication is successful, an SIGINT message is sent to command
-            to finish the command, otherwise, another _authentication message request_
-            is sent to command
+            If the authentication is successful, a SIGINT message is sent to command
+            to finish it, otherwise, another _authentication message request_ is sent to command
+        </section>
+
+        <section class="section section--references" ss:markdown>
+            ## References
+
+            <sup id="cite-1">1</sup> https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time></p>
+            <sup id="cite-2">2</sup> https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time></p>
         </section>
     </div>
     </body>
