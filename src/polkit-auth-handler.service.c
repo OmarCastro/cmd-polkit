@@ -23,13 +23,6 @@
 #include "polkit-auth-handler.service.h"
 #include "request-messages.h"
 
-
-#ifdef __GNUC__
-#  define UNUSED(x) UNUSED_ ## x __attribute__((__unused__))
-#else
-#  define UNUSED(x) UNUSED_ ## x
-#endif
-
 G_DEFINE_TYPE(CmdPkAgentPolkitListener, cmd_pk_agent_polkit_listener, POLKIT_AGENT_TYPE_LISTENER)
 
 typedef enum {
@@ -149,7 +142,7 @@ static void auth_dlg_data_free(AuthDlgData *d)
 	g_slice_free(AuthDlgData, d);
 }
 
-static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition), gpointer context )
+static gboolean on_new_input ( GIOChannel *source, [[maybe_unused]] GIOCondition condition, gpointer context )
 {
     log__verbose__reading_command_stdout();
     AuthDlgData *data = (AuthDlgData *) context;
@@ -215,7 +208,7 @@ static gboolean on_new_input ( GIOChannel *source, GIOCondition UNUSED(condition
     return G_SOURCE_CONTINUE;
 }
 
-static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean authorized, AuthDlgData* d)
+static void on_session_completed([[maybe_unused]] PolkitAgentSession* session, gboolean authorized, AuthDlgData* d)
 { 
     bool canceled = d->status == CANCELED;
     log__verbose__polkit_session_completed(authorized, canceled);
@@ -251,20 +244,20 @@ static void on_session_completed(PolkitAgentSession* UNUSED(session), gboolean a
 
 }
 
-static void on_session_request(PolkitAgentSession* UNUSED(session), gchar *req, gboolean visibility, AuthDlgData *d)
+static void on_session_request([[maybe_unused]] PolkitAgentSession* session, gchar *req, gboolean visibility, AuthDlgData *d)
 {
 	log__verbose__polkit_session_request(req, visibility);
     g_autofree const char *write_message = request_message_request_password(req, d->message, d->action_description);
     auth_dialog_data_write_to_channel(d, write_message);
 }
 
-static void on_session_show_error(PolkitAgentSession* UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
+static void on_session_show_error([[maybe_unused]] PolkitAgentSession* session, gchar *text, [[maybe_unused]] AuthDlgData* d)
 {
 
     log__verbose__polkit_session_show_error(text);
 }
 
-static void on_session_show_info(PolkitAgentSession *UNUSED(session), gchar *text, AuthDlgData* UNUSED(d))
+static void on_session_show_info([[maybe_unused]] PolkitAgentSession *session, gchar *text, [[maybe_unused]] AuthDlgData* d)
 {
     log__verbose__polkit_session_show_info(text);
 }
@@ -387,8 +380,10 @@ static void initiate_authentication(PolkitAgentListener  *listener,
     }
 }
 
-static gboolean initiate_authentication_finish(PolkitAgentListener *UNUSED(listener),
-				 GAsyncResult *res, GError **error)
+static gboolean initiate_authentication_finish(
+    [[maybe_unused]] PolkitAgentListener *listener,
+    GAsyncResult *res,
+    GError **error)
 {
 	log__verbose__finish_polkit_authentication();
 	return g_task_propagate_boolean(G_TASK(res), error);
@@ -415,7 +410,7 @@ static void cmd_pk_agent_polkit_listener_class_init(CmdPkAgentPolkitListenerClas
 	pkal_class->initiate_authentication_finish = initiate_authentication_finish;
 }
 
-static void cmd_pk_agent_polkit_listener_init(CmdPkAgentPolkitListener *UNUSED(self))
+static void cmd_pk_agent_polkit_listener_init([[maybe_unused]] CmdPkAgentPolkitListener *self)
 {
 }
 
