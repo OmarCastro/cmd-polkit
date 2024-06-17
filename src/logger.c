@@ -162,7 +162,13 @@ void log__verbose__polkit_action_description(MACRO__SOURCE_LOCATION_PARAMS, Polk
   log__verbose_formatted("└─ message: %s", polkit_action_description_get_message(action_description));
   log__verbose_formatted("└─ vendor name: %s", polkit_action_description_get_vendor_name(action_description));
   log__verbose_formatted("└─ vendor url: %s", polkit_action_description_get_vendor_url(action_description));
-  log__verbose_formatted("└─ icon name: %s", polkit_action_description_get_icon_name(action_description));
+  log__verbose_raw("└─ annotations:");
+
+  const gchar *const * annotations = polkit_action_description_get_annotation_keys(action_description);
+  for(const gchar *const * i = annotations; *i != NULL; ++i){
+    const gchar * annotation = *i;
+    log__verbose_formatted("└─ %s: %s", annotation, polkit_action_description_get_annotation(action_description, annotation));
+  }
 }
 
 void log__verbose__polkit_session_completed(MACRO__SOURCE_LOCATION_PARAMS, bool authorized, bool canceled){
