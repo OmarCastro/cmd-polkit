@@ -10,8 +10,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add "polkit action" parameter on authentication request
-- add zenity and jq example
-
+- Add zenity and jq example
+- Improve serial mode tests
+- Improve `--help` message
+- Add copyright/license info on `--version` message
 
 ## [0.2.0] - 2024-05-25
 
@@ -22,8 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- serial mode not authenticating sequentially
-- unescaped json
+- Serial mode not authenticating sequentially
+- Unescaped json
 
 
 ## [0.1.0] - 2021-06-21
