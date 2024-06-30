@@ -52,6 +52,27 @@ void finish_autentication_and_exit([[maybe_unused]] GObject *obj, GAsyncResult *
 	g_idle_add(quitloop, fixture);
 }
 
+void finish_autentication_chek_serial_exit([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
+	Fixture *fixture = fixture_ptr;
+	PolkitAgentListener *listener = fixture->listener;
+	GError *error = NULL;
+	POLKIT_AGENT_LISTENER_GET_CLASS (listener)->initiate_authentication_finish (listener, result, &error);
+	gchar * contents = NULL;
+	if(g_file_get_contents("test-serial.timings.txt", &contents, NULL, NULL)){
+			g_assert_cmpstr(contents, ==, "\
+start\n\
+end\n\
+start\n\
+end\n\
+");
+	}
+	g_free(contents);
+	GFile* file = g_file_new_for_path ("test-serial.timings.txt");
+	g_file_delete(file, NULL, NULL);
+	g_object_unref(file);
+	g_idle_add(quitloop, fixture);
+}
+
 static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 	Fixture *fixture = fixture_ptr;
 	fixture->listener = cmd_pk_agent_polkit_listener_new();
@@ -110,7 +131,7 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 		cookie,
 		fixture->identities,
 		NULL,
-		finish_autentication_and_exit,
+		finish_autentication_chek_serial_exit,
 		fixture
 	);
 
@@ -148,7 +169,7 @@ static void test_polkit_auth_handler_authentication_serial_mode (Fixture *fixtur
 		"cmd-polkit-agent",
 		"-s", 
 		"-c", 
-		"bash ./assets/test_response_command.sh", 
+		"bash ./assets/test_response_serial.sh", 
 		NULL
 	};
 	app__init(test_argc, test_argv_serial);
