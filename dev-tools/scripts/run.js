@@ -363,7 +363,11 @@ async function makeBadgeForTestResult (path) {
   const stdout = await readFile(`${path}/testlog.json`).then(str => str.split("\n").map(line => line ? JSON.parse(line).stdout: "").join(''))
   const tests = stdout.split('\n').filter(test => /^n?ok /.test(test) )
   const passedTests = tests.filter(test => test.startsWith('ok'))
-  const testAmount = tests.length
+  const testAmountFromTap = stdout.split('\n')
+    .filter(test => /^1../.test(test) )
+    .map(line => +line.split('..')[1] ?? 0)
+    .reduce((a, b) => a + b)
+  const testAmount =  testAmountFromTap || tests.length
   const passedAmount = passedTests.length
   const passed = passedAmount === testAmount
   const svg = await makeBadge({
