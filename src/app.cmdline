@@ -1,4 +1,4 @@
-version "0.2"
+version "0.3"
 package "cmd-polkit-agent"
 purpose "A tool that allows to easily customize the UI used to authenticate on polkit"
 usage "cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND"
