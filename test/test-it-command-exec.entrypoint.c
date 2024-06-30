@@ -37,6 +37,13 @@ int quitloop(gpointer fixture_ptr){
 
 }
 
+void finish_autentication([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
+	Fixture *fixture = fixture_ptr;
+	PolkitAgentListener *listener = fixture->listener;
+	GError *error = NULL;
+	POLKIT_AGENT_LISTENER_GET_CLASS (listener)->initiate_authentication_finish (listener, result, &error);
+}
+
 void finish_autentication_and_exit([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
 	Fixture *fixture = fixture_ptr;
 	PolkitAgentListener *listener = fixture->listener;
@@ -57,6 +64,45 @@ static int test_polkit_auth_handler_authentication_aux (gpointer fixture_ptr) {
 	fixture->identities = g_list_append(fixture->identities, user);
 
 	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+		fixture->listener,
+		action_id,message,
+		icon_name,
+		fixture->details,
+		cookie,
+		fixture->identities,
+		NULL,
+		finish_autentication_and_exit,
+		fixture
+	);
+
+
+	return G_SOURCE_REMOVE;
+}
+
+static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_ptr) {
+	Fixture *fixture = fixture_ptr;
+	fixture->listener = cmd_pk_agent_polkit_listener_new();
+	const gchar *action_id = "org.freedesktop.policykit.exec";
+	const gchar *message = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
+	const gchar *icon_name = "";
+	const gchar *cookie = "3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2";
+	fixture->details = polkit_details_new();
+	PolkitIdentity *user = polkit_unix_user_new(1000);
+	fixture->identities = g_list_append(fixture->identities, user);
+
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+		fixture->listener,
+		action_id,message,
+		icon_name,
+		fixture->details,
+		cookie,
+		fixture->identities,
+		NULL,
+		finish_autentication,
+		fixture
+	);
+
+		POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
 		fixture->listener,
 		action_id,message,
 		icon_name,
@@ -97,6 +143,21 @@ static void test_polkit_auth_handler_authentication_fail_retry (Fixture *fixture
 	g_main_loop_run(fixture->loop);
 }
 
+static void test_polkit_auth_handler_authentication_serial_mode (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
+	char * test_argv_serial[] = {
+		"cmd-polkit-agent",
+		"-s", 
+		"-c", 
+		"bash ./assets/test_response_command.sh", 
+		NULL
+	};
+	app__init(test_argc, test_argv_serial);
+	fixture->loop = g_main_loop_new (NULL, FALSE);
+	g_idle_add(test_polkit_auth_handler_authentication_aux_serial, fixture);
+	g_main_loop_run(fixture->loop);
+}
+
+
 
 static void test_set_up ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data){
 	app__reset();
@@ -132,6 +193,7 @@ int main (int argc, char *argv[]) {
 	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure success testing", test_polkit_auth_handler_authentication_success);
 	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure cancel testing", test_polkit_auth_handler_authentication_cancel);
 	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure fail retry testing", test_polkit_auth_handler_authentication_fail_retry);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure serial mode", test_polkit_auth_handler_authentication_serial_mode);
 
 	#undef test
 	return g_test_run ();
