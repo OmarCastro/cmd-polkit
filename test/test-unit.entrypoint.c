@@ -241,8 +241,9 @@ Vrbos:test_log_invalid_polkit_auth_identities:└─ {\"type\":\"error\",\"error
 
 static void test_log_polkit_action_description ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 	log__verbose();
-	g_autoptr(PolkitActionDescription) action_description = get_test_polkit_action_description();
+	PolkitActionDescription* action_description = get_test_polkit_action_description();
 	log__verbose__polkit_action_description(action_description);
+	g_object_unref(action_description);
 
 	g_assert_cmpstr(get_stdout()->str, ==, "\
 Vrbos:test_log_polkit_action_description:Polkit action description\n\
