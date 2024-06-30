@@ -255,6 +255,38 @@ Vrbos:test_log_invalid_polkit_auth_identities:└─ {\"type\":\"error\",\"error
 	g_list_free(invalidTypeObject);
 }
 
+static void test_log_polkit_action_description ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
+	log__verbose();
+	GError *error = NULL;
+    PolkitAuthority* authority = polkit_authority_get_sync(NULL, &error);
+    if(error == NULL){
+        GList* actions = polkit_authority_enumerate_actions_sync (authority,NULL,&error);
+        if(error == NULL){
+            for(GList *elem = actions; elem; elem = elem->next) {
+                PolkitActionDescription* action_description = elem->data;
+                const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
+                if(strcmp(action_description_action_id, "org.freedesktop.login1.halt") == 0){
+                    log__verbose__polkit_action_description(action_description);
+                    g_object_ref(action_description);
+                }
+                g_object_unref(action_description);
+            }
+            g_list_free(actions);
+        }
+        g_object_unref(authority);
+    }
+
+	g_assert_cmpstr(get_stdout()->str, ==, "\
+Vrbos:test_log_polkit_action_description:Polkit action description\n\
+Vrbos:test_log_polkit_action_description:└─ id: org.freedesktop.login1.halt\n\
+Vrbos:test_log_polkit_action_description:└─ description: Halt the system\n\
+Vrbos:test_log_polkit_action_description:└─ message: Authentication is required to halt the system.\n\
+Vrbos:test_log_polkit_action_description:└─ vendor name: The systemd Project\n\
+Vrbos:test_log_polkit_action_description:└─ vendor url: https://systemd.io\n\
+Vrbos:test_log_polkit_action_description:└─ annotations:\n\
+Vrbos:test_log_polkit_action_description:   └─ org.freedesktop.policykit.imply: org.freedesktop.login1.set-wall-message\n\
+");
+}
 
 
 static void test_log_empty_polkit_details ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
@@ -535,6 +567,7 @@ int main (int argc, char *argv[]) {
 	test ("/ logger / polkit authentication logs", test_log_verbose_init_polkit_authentication);
 	test ("/ logger / polkit authentication identity information is logged as json", test_log_polkit_auth_identities);
 	test ("/ logger / invalid polkit authentication identity is still logged as json, to help identify the cause of a failure", test_log_invalid_polkit_auth_identities);
+	test ("/ logger / polkit action description logs", test_log_polkit_action_description);
 	test ("/ logger / empty policy kit details is shown as empty", test_log_empty_polkit_details);
 	test ("/ logger / non-empty policy kit details is shown with key: value pairs", test_log_non_empty_polkit_details);
 	test ("/ logger / log_polkit_session_completed logs session information", test_log_polkit_session_completed);

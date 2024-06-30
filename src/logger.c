@@ -167,7 +167,7 @@ void log__verbose__polkit_action_description(MACRO__SOURCE_LOCATION_PARAMS, Polk
   const gchar *const * annotations = polkit_action_description_get_annotation_keys(action_description);
   for(const gchar *const * i = annotations; *i != NULL; ++i){
     const gchar * annotation = *i;
-    log__verbose_formatted("└─ %s: %s", annotation, polkit_action_description_get_annotation(action_description, annotation));
+    log__verbose_formatted("   └─ %s: %s", annotation, polkit_action_description_get_annotation(action_description, annotation));
   }
 }
 
