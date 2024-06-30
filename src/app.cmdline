@@ -1,7 +1,14 @@
 version "0.3"
+versiontext "Copyright (C) 2024 Omar Castro.
+License GPLv2.1+: GNU GPL version 2.1 or later <https://www.gnu.org/licenses/lgpl.html>.
+This is free software: you are free to change and redistribute it.
+There is NO WARRANTY, to the extent permitted by law.
+
+Written by Omar Castro."
 package "cmd-polkit-agent"
-purpose "A tool that allows to easily customize the UI used to authenticate on polkit"
+purpose "Polkit agent that allows to easily customize the UI to authenticate on polkit."
 usage "cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND"
+description "Runs COMMAND for each authentication request and communicates with it via JSON messages through stdin and stdout. It allows to easily create a GUI to authenticate on polkit."
 
 # Options
 option "command" c "Command to execute on authorization request" typestr="COMMAND" string optional
@@ -10,3 +17,5 @@ option "parallel" p "handle authorization in parallel" optional
 option "verbose" v "Increase program verbosity" optional
 option "quiet" q "Do not print anything" optional
 option "silent" - "" optional
+
+text "\nFull documentation <https://omarcastro.github.io/cmd-polkit>"
