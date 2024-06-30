@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Add "polkit action" parameter on authentication request
-- Add zenity and jq example
+- Add zenity with jq example
 - Improve serial mode tests
 - Improve `--help` message
 - Add copyright/license info on `--version` message
