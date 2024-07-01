@@ -40,20 +40,24 @@ test_sources = [
 
 test_unit_sources            = [ 'test/test-unit.entrypoint.c' ] + test_sources
 test_it_command_exec_sources = [ 'test/test-it-command-exec.entrypoint.c' ] + test_sources
+test_it_serial_mode          = [ 'test/test-it-serial-mode.entrypoint.c' ] + test_sources
+test_it_parallel_mode        = [ 'test/test-it-parallel-mode.entrypoint.c' ] + test_sources
 
 executable('cmd-polkit-agent', main_sources,
   dependencies: deps,
   install: true,
 )
 
+test_env = [
+  'LC_ALL=C',
+  'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
+  'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
+]
+
 test(
-  'test-suite',
-  executable('cmd-polkit-agent-test', test_unit_sources, dependencies: deps),
-  env: [
-    'LC_ALL=C',
-    'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
-    'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
-  ],
+  'test-suite-unit',
+  executable('cmd-polkit-agent-test-unit', test_unit_sources, dependencies: deps),
+  env: test_env,
   protocol: 'tap',
   workdir: join_paths(meson.current_source_dir(), 'test')
 )
@@ -61,14 +65,25 @@ test(
 test(
   'test-suite-it',
   executable('cmd-polkit-agent-test-it-command-exec', test_it_command_exec_sources, dependencies: deps),
-  env: [
-    'LC_ALL=C',
-    'G_TEST_SRCDIR=@0@'.format(meson.current_source_dir()),
-    'G_TEST_BUILDDIR=@0@'.format(meson.current_build_dir()),
-  ],
+  env: test_env,
   protocol: 'tap',
   workdir: join_paths(meson.current_source_dir(), 'test')
 )
 
+test(
+  'test-suite-it-serial-mode',
+  executable('cmd-polkit-agent-test-it-serial-mode', test_it_serial_mode, dependencies: deps),
+  env: test_env,
+  protocol: 'tap',
+  workdir: join_paths(meson.current_source_dir(), 'test')
+)
+
+test(
+  'test-suite-it-parallel-mode',
+  executable('cmd-polkit-agent-test-it-parallel-mode', test_it_parallel_mode, dependencies: deps),
+  env: test_env,
+  protocol: 'tap',
+  workdir: join_paths(meson.current_source_dir(), 'test')
+)
 
 
