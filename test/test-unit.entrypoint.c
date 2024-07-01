@@ -112,8 +112,14 @@ static void test_all_request_messages_are_single_line ([[maybe_unused]] Fixture 
 }
 
 static void test_request_message_request_password_is_escaped_correctly ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
-	g_autofree const gchar* request_pass_message = request_message_request_password("\n\"", "\n\"", NULL);
-	g_assert_cmpstr(request_pass_message, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"polkit action\":null}");
+	g_autofree const gchar* request_pass_message_1 = request_message_request_password("\n\"", "no \n polkit \" action", NULL);
+	g_assert_cmpstr(request_pass_message_1, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"no \\n polkit \\\" action\",\"polkit action\":null}");
+
+
+	PolkitActionDescription* action_description = get_test_polkit_action_description();
+	g_autofree const gchar* request_pass_message_2 = request_message_request_password("\n\"", "\n\"", action_description);
+	g_object_unref(action_description);
+	g_assert_cmpstr(request_pass_message_2, ==, "{\"action\":\"request password\",\"prompt\":\"\\n\\\"\",\"message\":\"\\n\\\"\",\"polkit action\":{\"id\":\"org.freedesktop.login1.halt\",\"description\":\"Halt the system\",\"message\":\"Authentication is required to halt the system.\",\"vendor name\":\"The systemd Project\",\"vendor url\":\"https://systemd.io\",\"icon name\":\"\"}}");
 }
 
 static void test_default_logs ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
