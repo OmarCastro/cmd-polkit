@@ -44,7 +44,7 @@ static void finish_autentication([[maybe_unused]] GObject *obj, GAsyncResult * r
 	POLKIT_AGENT_LISTENER_GET_CLASS (listener)->initiate_authentication_finish (listener, result, &error);
 }
 
-static void finish_autentication_chek_serial_exit([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
+static void finish_autentication_chek_parallel_exit([[maybe_unused]] GObject *obj, GAsyncResult * result, gpointer fixture_ptr){
 	Fixture *fixture = fixture_ptr;
 	PolkitAgentListener *listener = fixture->listener;
 	GError *error = NULL;
@@ -54,9 +54,16 @@ static void finish_autentication_chek_serial_exit([[maybe_unused]] GObject *obj,
 		GFile* file = g_file_new_for_path ("test-parallel.timings.txt");
 		g_file_delete(file, NULL, NULL);
 		g_object_unref(file);
+		/*
+		   Unlike finish_autentication_chek_serial_exit() method test-it-serial-mode,
+		  we do not care which command started or finished first, since they are
+		  meant to run in parallel, what matters is that they all started and finished
+		*/ 
 		g_assert_cmpstr(contents, ==, "\
 start\n\
 start\n\
+start\n\
+end\n\
 end\n\
 end\n\
 ");
@@ -65,7 +72,7 @@ end\n\
 	g_idle_add(quitloop, fixture);
 }
 
-static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_ptr) {
+static int test_polkit_auth_handler_authentication_parallel_aux (gpointer fixture_ptr) {
 	Fixture *fixture = fixture_ptr;
 	fixture->listener = cmd_pk_agent_polkit_listener_new();
 	const gchar *action_id = "org.freedesktop.policykit.exec";
@@ -88,7 +95,7 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 		fixture
 	);
 
-		POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
 		fixture->listener,
 		action_id,message,
 		icon_name,
@@ -96,7 +103,19 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 		cookie,
 		fixture->identities,
 		NULL,
-		finish_autentication_chek_serial_exit,
+		finish_autentication,
+		fixture
+	);
+
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+		fixture->listener,
+		action_id,message,
+		icon_name,
+		fixture->details,
+		cookie,
+		fixture->identities,
+		NULL,
+		finish_autentication_chek_parallel_exit,
 		fixture
 	);
 
@@ -106,11 +125,11 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 
 
 
-static void test_polkit_auth_handler_authentication_serial_mode (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
+static void test_polkit_auth_handler_authentication_parallel_mode (Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
 
 	app__init(test_argc, test_argv);
 	fixture->loop = g_main_loop_new (NULL, FALSE);
-	g_idle_add(test_polkit_auth_handler_authentication_aux_serial, fixture);
+	g_idle_add(test_polkit_auth_handler_authentication_parallel_aux, fixture);
 	g_main_loop_run(fixture->loop);
 }
 
@@ -147,7 +166,7 @@ int main (int argc, char *argv[]) {
 	#define test(path, func)   g_test_add (path, Fixture, NULL, test_set_up, func, test_tear_down);
 
     // Define the tests.
-	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure serial mode", test_polkit_auth_handler_authentication_serial_mode);
+	test ("/ polkit auth handler / CmdPkAgentPolkitListener initiate_authentication procedure serial mode", test_polkit_auth_handler_authentication_parallel_mode);
 
 	#undef test
 	return g_test_run ();

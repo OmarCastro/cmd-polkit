@@ -55,10 +55,12 @@ static void finish_autentication_chek_serial_exit([[maybe_unused]] GObject *obj,
 		g_file_delete(file, NULL, NULL);
 		g_object_unref(file);
 		g_assert_cmpstr(contents, ==, "\
-start\n\
-end\n\
-start\n\
-end\n\
+start `/usr/bin/echo 1` auth\n\
+  end `/usr/bin/echo 1` auth\n\
+start `/usr/bin/echo 2` auth\n\
+  end `/usr/bin/echo 2` auth\n\
+start `/usr/bin/echo 3` auth\n\
+  end `/usr/bin/echo 3` auth\n\
 ");
 	}
 	g_free(contents);
@@ -69,7 +71,9 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 	Fixture *fixture = fixture_ptr;
 	fixture->listener = cmd_pk_agent_polkit_listener_new();
 	const gchar *action_id = "org.freedesktop.policykit.exec";
-	const gchar *message = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
+	const gchar *message_1 = "Authentication is needed to run `/usr/bin/echo 1' as the super user";
+	const gchar *message_2 = "Authentication is needed to run `/usr/bin/echo 2' as the super user";
+	const gchar *message_3 = "Authentication is needed to run `/usr/bin/echo 3' as the super user";
 	const gchar *icon_name = "";
 	const gchar *cookie = "3-97423289449bd6d0c3915fb1308b9814-1-a305f93fec6edd353d6d1845e7fcf1b2";
 	fixture->details = polkit_details_new();
@@ -78,7 +82,7 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 
 	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
 		fixture->listener,
-		action_id,message,
+		action_id,message_1,
 		icon_name,
 		fixture->details,
 		cookie,
@@ -88,9 +92,21 @@ static int test_polkit_auth_handler_authentication_aux_serial (gpointer fixture_
 		fixture
 	);
 
-		POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
 		fixture->listener,
-		action_id,message,
+		action_id,message_2,
+		icon_name,
+		fixture->details,
+		cookie,
+		fixture->identities,
+		NULL,
+		finish_autentication,
+		fixture
+	);
+
+	POLKIT_AGENT_LISTENER_GET_CLASS(fixture->listener)->initiate_authentication(
+		fixture->listener,
+		action_id,message_3,
 		icon_name,
 		fixture->details,
 		cookie,
