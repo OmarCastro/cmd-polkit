@@ -93,6 +93,7 @@ async function createBadges () {
   await makeBadgeForLicense(pathFromProject('build-docs/reports'))
   await makeBadgeForCoverages(pathFromProject('build-docs/reports'))
   await makeBadgeForTestResult(pathFromProject('build-docs/reports'))
+  await makeBadgeForRepo(pathFromProject('build-docs/reports'))
 }
 
 // @section 4 utils
@@ -356,6 +357,19 @@ async function makeBadgeForCoverages (path) {
 
   const badgeWrite = writeFile(`${path}/coverage-badge.svg`, svg)
   const a11yBadgeWrite = writeFile(`${path}/coverage-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '🛡︎' }))
+  await Promise.all([badgeWrite, a11yBadgeWrite])
+}
+
+
+async function makeBadgeForRepo(path){
+    const svg = await makeBadge({
+      label: 'Code Repository',
+      message: 'on Github',
+      color: getBadgeColors().blue,
+      logo: asciiIconSvg('🛠'),
+    })
+  const badgeWrite = writeFile(`${path}/repo-badge.svg`, svg)
+  const a11yBadgeWrite = writeFile(`${path}/repo-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '🛠' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 

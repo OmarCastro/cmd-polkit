@@ -114,6 +114,13 @@ queryAll('img[ss:size]').forEach(element => {
   element.setAttribute('height', `${size.height}`)
 })
 
+queryAll('[ss:aria-label]').forEach(element => {
+  element.removeAttribute('ss:aria-label')
+  if(element.hasAttribute('title') && !element.hasAttribute('aria-label')){
+    element.setAttribute("aria-label", element.getAttribute("title"))
+  }
+})
+
 promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const svgText = await readFile(`${docsOutputPath}/${imageSrc}`, 'utf8')
