@@ -106,6 +106,13 @@ queryAll('code').forEach(element => {
   Prism.highlightElement(element, false)
 })
 
+queryAll('[ss:aria-label]').forEach(element => {
+  element.removeAttribute('ss:aria-label')
+  if(element.hasAttribute('title') && !element.hasAttribute('aria-label')){
+    element.setAttribute("aria-label", element.getAttribute("title"))
+  }
+})
+
 queryAll('img[ss:size]').forEach(element => {
   const imageSrc = element.getAttribute('src')
   const size = imageSize(`${docsOutputPath}/${imageSrc}`)
@@ -114,27 +121,24 @@ queryAll('img[ss:size]').forEach(element => {
   element.setAttribute('height', `${size.height}`)
 })
 
-queryAll('[ss:aria-label]').forEach(element => {
-  element.removeAttribute('ss:aria-label')
-  if(element.hasAttribute('title') && !element.hasAttribute('aria-label')){
-    element.setAttribute("aria-label", element.getAttribute("title"))
-  }
-})
-
 promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const svgText = await readFile(`${docsOutputPath}/${imageSrc}`, 'utf8')
   const div = document.createElement('div')
   div.innerHTML = svgText
-  element.removeAttribute('ss:badge-attrs')
   const svg = div.querySelector('svg')
   if (!svg) { throw Error(`${docsOutputPath}/${imageSrc} is not a valid svg`) }
 
-  const alt = svg.getAttribute('aria-label')
-  if (alt) { element.setAttribute('alt', alt) }
+  if(!element.hasAttribute('alt') && !element.matches('[ss:badge-attrs~=-alt]')){
+    const alt = svg.getAttribute('aria-label')
+    if (alt) { element.setAttribute('alt', alt) }
+  }
 
-  const title = svg.querySelector('title')?.textContent
-  if (title) { element.setAttribute('title', title) }
+  if(!element.hasAttribute('title') && !element.matches('[ss:badge-attrs~=-title]')){
+     const title = svg.querySelector('title')?.textContent
+     if (title) { element.setAttribute('title', title) }  
+  }
+  element.removeAttribute('ss:badge-attrs')
 }))
 
 queryAll('link[href][rel="stylesheet"][ss:inline]').forEach(element => {
