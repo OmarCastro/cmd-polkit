@@ -28,7 +28,7 @@ const char *gengetopt_args_info_purpose = "Polkit agent that allows to easily cu
 
 const char *gengetopt_args_info_usage = "Usage: cmd-polkit-agent -s|--serial|-p|parallel -c|--command COMMAND";
 
-const char *gengetopt_args_info_versiontext = "Copyright (C) 2024 Omar Castro.\nLicense GPLv2.1+: GNU GPL version 2.1 or later\n<https://www.gnu.org/licenses/lgpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Omar Castro.";
+const char *gengetopt_args_info_versiontext = "Copyright (C) 2024 Omar Castro.\nLicense LGPLv2.1+: GNU LGPL version 2.1 or later\n<https://www.gnu.org/licenses/lgpl.html>.\nThis is free software: you are free to change and redistribute it.\nThere is NO WARRANTY, to the extent permitted by law.\n\nWritten by Omar Castro.";
 
 const char *gengetopt_args_info_description = "Runs COMMAND for each authentication request and communicates with it via JSON\nmessages through stdin and stdout. It allows to easily create a GUI to\nauthenticate on polkit.";
 
