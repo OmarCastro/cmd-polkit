@@ -336,7 +336,7 @@ async function applyA11yTheme (svgContent, options = {}) {
     const img = svg.querySelector('image')
     if (img) {
       const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-      text.innerHTML = options.replaceIconToText
+      text.textContent = options.replaceIconToText
       text.setAttribute('transform', 'scale(.15)')
       text.classList.add('icon')
       text.setAttribute('x', '90')
@@ -385,12 +385,12 @@ async function makeBadgeForCoverages (path) {
 async function makeBadgeForRepo(path){
     const svg = await makeBadge({
       label: 'Code Repository',
-      message: 'on Github',
+      message: 'Github',
       color: getBadgeColors().blue,
-      logo: asciiIconSvg('🛠'),
+      logo: asciiIconSvg('❮❯'),
     })
   const badgeWrite = writeFile(`${path}/repo-badge.svg`, svg)
-  const a11yBadgeWrite = writeFile(`${path}/repo-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '🛠' }))
+  const a11yBadgeWrite = writeFile(`${path}/repo-badge-a11y.svg`, await applyA11yTheme(svg, { replaceIconToText: '❮❯' }))
   await Promise.all([badgeWrite, a11yBadgeWrite])
 }
 
