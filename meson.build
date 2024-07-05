@@ -1,4 +1,4 @@
-project('cmd-polkit', 'c', version : '0.3.0')
+project('cmd-polkit', 'c', version : '0.4.0-dev')
 
 prefix = get_option('prefix')
 libexecdir = join_paths(prefix, get_option('libexecdir'))
