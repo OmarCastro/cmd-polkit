@@ -47,7 +47,7 @@
         <section class="section section--introduction" ss:markdown>
             ## Introducion
 
-            `cmd-polkit` is a tool that allows to easily customize the UI used to authenticate on polkit
+            `cmd-polkit` is a tool that allows to easily customize the UI used to authenticate on polkit.
 
             <div class="screenshots">
                 <figure>
@@ -88,7 +88,7 @@
 
             The next figure show a sequence diagram of an authentication process. The
             "command" agent is the application to execute using the <code>--command</code>,
-            or <code>-c</code> argument
+            or <code>-c</code> argument.
 
             <figure style="text-align: center;">
                 <img width="600" src="./seq-diagram-1.svg" alt="sequence diagram of a single authentication process"></img>
@@ -137,7 +137,7 @@
             This is good for running GUI propmt applications that can have mutliple instances.
 
             It is up to the user to define which mode is compatible with the GUI application that he
-            wishes to use without needing to create and maintain a daemon for authentication in serie
+            wishes to use without needing to create and maintain a daemon for authentication in serie.
 
         </section>
 
@@ -167,7 +167,7 @@
             - `action` is hardcoded to show `"request password"`
             - `prompt` tha password input label, in other words, the prompt message to show to the user, just before the password input
             - `message` is the the message to show to the user
-            - `polkit action` represents the polkit action related to the application that requests the authentication. Respects <cite><a href="https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation"></a>PolkitActionDescription</cite><sup><a href="#cite-1">[1]</a></sup> more about actions on the Polkit documentation<sup><a href="#cite-2">[2]</a></sup>
+            - `polkit action` represents the polkit action related to the application that requests the authentication. Respects <cite>PolkitActionDescription<sup><a href="#cite-1">[1]</a></sup></cite> more about actions on the Polkit documentation<sup><a href="#cite-2">[2]</a></sup>
                 - `id` is the polkit action ID
                 - `description` A human readable description of the action, e.g. “Install unsigned software”. 
                 - `message` A human readable message displayed to the user when asking for credentials when authentication is needed, similar but not always equal to root `message`. 
@@ -186,7 +186,7 @@
 
             After the _authentication message request_ is sent, it will expect
             a response from command stdout that respects the folloing schema,
-            it will use the password to authenticate to polkit
+            it will use the password to authenticate to polkit:
 
             <pre><code class="language-json">{
               "action": "authenticate",
@@ -196,7 +196,7 @@
             ### Authentication result
 
             After authentication attempt is made is made, a message will be
-            sent to command to show the result
+            sent to command to show the result:
 
             <pre><code class="language-json">{
               "action": "authorization response",
@@ -204,14 +204,14 @@
             }</code></pre>
 
             If the authentication is successful, a SIGINT message is sent to command
-            to finish it, otherwise, another _authentication message request_ is sent to command
+            to finish it, otherwise, another _authentication message request_ is sent to command.
         </section>
 
         <section class="section section--references" ss:markdown>
             ## References
 
-            <sup id="cite-1">1</sup> https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time></p>
-            <sup id="cite-2">2</sup> https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time></p>
+            <sup id="cite-1">1</sup> https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>
+            <sup id="cite-2">2</sup> https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>
         </section>
     </div>
     </body>
