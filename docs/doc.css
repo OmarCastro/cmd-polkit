@@ -337,3 +337,47 @@ table, th, td {
     border-collapse: collapse;
     border: 1px solid var(--fg-color);
 }
+
+.screenshots {
+    display: flex;
+    justify-content: center; 
+}
+
+button.zoom {
+    background: none;
+    border: none;
+}
+
+button.img-button {
+    background: none;
+    border: none;
+    cursor: zoom-in;
+}
+
+
+
+button.img-button.zoom-close {
+    background: var(--bg-color);
+    border: none;
+}
+
+dialog.img-zoom {
+    background: none;
+    border: none;
+}
+
+dialog.img-zoom button.zoom-close {
+    background: none;
+    border: none;
+    cursor: zoom-out;
+
+}
+
+dialog.img-zoom::backdrop {
+    background: #00000080;
+}
+
+dialog.img-zoom img {
+    max-width: 100vw;
+    max-height: 100vh;
+}

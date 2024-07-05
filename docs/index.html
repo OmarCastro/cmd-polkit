@@ -48,7 +48,36 @@
             ## Introducion
 
             `cmd-polkit` is a tool that allows to easily customize the UI used to authenticate on polkit
+
+            <div class="screenshots">
+                <figure>
+                    <button class="img-button" popovertarget="fig1-popover">
+                        <img width="500" src="./images/screenshot-rofi.png" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
+                    </button>
+                    <figcaption>Fig.1 - custom authentication using cmd-polkit with rofi</figcaption>
+                </figure>
+                <figure>
+                    <button class="img-button" popovertarget="fig2-popover">
+                        <img width="500" src="./images/screenshot-zenity.png" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
+                    </button>
+                    <figcaption>Fig.2 - custom authentication using cmd-polkit with zenity</figcaption>
+                </figure>
+            </div>
+
+            <dialog id="fig1-popover" class="img-zoom" popover>
+                <button class="zoom-close" popovertarget="fig1-popover" popovertargetaction="hide">
+                    <img class=zoom-img src="./images/screenshot-rofi.png" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
+                </button>
+            </dialog>
+
+            <dialog id="fig2-popover" class="img-zoom" popover>
+                <button class="zoom-close" popovertarget="fig2-popover" popovertargetaction="hide">
+                    <img class=zoom-img src="./images/screenshot-zenity.png" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
+                </button>
+            </dialog>
+            
         </section>
+
 
         <section class="section section--introduction" ss:markdown>
             ## How it works
@@ -62,8 +91,8 @@
             or <code>-c</code> argument
 
             <figure style="text-align: center;">
-                <img width="600" src="./seq-diagram-1.svg"></img>
-                <figcaption>Fig.1 - authentication process</figcaption>
+                <img width="600" src="./seq-diagram-1.svg" alt="sequence diagram of a single authentication process"></img>
+                <figcaption>Fig.3 - authentication process</figcaption>
             </figure>
 
         </section>
@@ -84,8 +113,8 @@
             the command will only run after finishing the first authentication process.
 
             <figure style="text-align: center;">
-                <img width="800" src="./seq-diagram-serial.svg"></img>
-                <figcaption>Fig.2 - authentication process in serial mode</figcaption>
+                <img width="800" src="./seq-diagram-serial.svg" alt="sequence diagram of mutliple authentication processes in serial mode"></img>
+                <figcaption>Fig.4 - authentication process in serial mode</figcaption>
             </figure>
 
             This is good for running GUI propmt applications that cannot have mutliple instances
@@ -100,8 +129,8 @@
             using serial mode. Each command can handle the process independently.
 
             <figure style="text-align: center;">
-                <img width="800" src="./seq-diagram-parallel.svg"></img>
-                <figcaption>Fig.3 - authentication process in parallel mode</figcaption>
+                <img width="800" src="./seq-diagram-parallel.svg" alt="sequence diagram of mutliple authentication processes in parallel mode">></img>
+                <figcaption>Fig.5 - authentication process in parallel mode</figcaption>
             </figure>
 
 
