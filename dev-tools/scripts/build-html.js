@@ -87,6 +87,7 @@ queryAll('svg[ss:include]').forEach(element => {
   const ssInclude = element.getAttribute('ss:include')
   const svgText = readFileImport(ssInclude)
   element.outerHTML = svgText
+  element.removeAttribute('ss:include')
 })
 
 queryAll('[ss:markdown]:not([ss:include])').forEach(element => {
@@ -94,12 +95,15 @@ queryAll('[ss:markdown]:not([ss:include])').forEach(element => {
     .replaceAll('\n&gt;', '\n>') // for blockquotes, innerHTML escapes ">" chars
   console.error(md)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
+  element.removeAttribute('ss:markdown')
 })
 
 queryAll('[ss:markdown][ss:include]').forEach(element => {
   const ssInclude = element.getAttribute('ss:include')
   const md = readFileImport(ssInclude)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
+  element.removeAttribute('ss:markdown')
+  element.removeAttribute('ss:include')
 })
 
 queryAll('code').forEach(element => {
@@ -115,8 +119,30 @@ queryAll('[ss:aria-label]').forEach(element => {
 
 queryAll('img[ss:size]').forEach(element => {
   const imageSrc = element.getAttribute('src')
+  const getdefinedLength = (attr) => {
+    if(!element.hasAttribute(attr)){ return undefined }
+    const length = element.getAttribute(attr)
+    if(isNaN(parseInt(length)) || isNaN(+length)){ return undefined }
+    return +length
+  }
+  const definedWidth = getdefinedLength('width')
+  const definedHeight = getdefinedLength('height')
+  if(definedWidth && definedHeight){
+    return
+  }
   const size = imageSize(`${docsOutputPath}/${imageSrc}`)
   element.removeAttribute('ss:size')
+  const {width, height} = size
+  if(definedWidth){
+    element.setAttribute('width', `${definedWidth}`)
+    element.setAttribute('height', `${Math.ceil(height * definedWidth/width)}`)
+    return
+  } 
+  if(definedHeight){
+    element.setAttribute('width', `${Math.ceil(width * definedHeight/height)}`)
+    element.setAttribute('height', `${definedHeight}`)
+    return
+  } 
   element.setAttribute('width', `${size.width}`)
   element.setAttribute('height', `${size.height}`)
 })
