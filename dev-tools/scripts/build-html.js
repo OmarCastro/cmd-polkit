@@ -167,11 +167,15 @@ promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   element.removeAttribute('ss:badge-attrs')
 }))
 
-queryAll('link[href][rel="stylesheet"][ss:inline]').forEach(element => {
+promises.push(...queryAll('style').map(async element => {
+  element.innerHTML = await minifyCss(element.innerHTML)
+}))
+
+promises.push(...queryAll('link[href][rel="stylesheet"][ss:inline]').map(async element => {
   const href = element.getAttribute('href')
   const cssText = readFileImport(href)
-  element.outerHTML = `<style>${cssText}</style>`
-})
+  element.outerHTML = `<style>${await minifyCss(cssText)}</style>`
+}))
 
 promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
   const href = element.getAttribute('href')
@@ -281,6 +285,11 @@ async function * getFiles (dir) {
   }
 }
 
+async function minifyCss (cssText) {
+  const esbuild = await import('esbuild')
+  const result = await esbuild.transform(cssText, { loader: 'css', minify: true })
+  return result.code
+}
 
 /**
  * Minifies the DOM tree
