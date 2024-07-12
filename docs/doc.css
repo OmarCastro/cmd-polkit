@@ -335,18 +335,18 @@ pre:hover code span[contenteditable="true"]::before {
     max-width: 100%;
 }
 
-
-table {  
-    margin: 0px auto;
-}
-
 th, td {
     padding: 0.2em;
 }
 
 table, th, td {
     border-collapse: collapse;
-    border: 1px solid var(--fg-color);
+    border: 1px solid var(--sidebar-border-color);
+    padding: 0.3em 1em;
+}
+
+table tr:nth-child(2n){
+    background-color: #ffffff08;
 }
 
 .screenshots {
