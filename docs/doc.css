@@ -10,6 +10,7 @@
     --fg-color-disabled: #404550;
     --resizable-border-color: #303540;
     --tab-active-color: #007299;
+    --even-tr-bg: #00000008;
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji";
 }
 
@@ -25,6 +26,7 @@
         --fg-color-disabled: #ccc;
         --resizable-border-color: #dddcdf;
         --tab-active-color: #fa5;
+        --even-tr-bg: #ffffff08;
     }
 
     a { color: #6ad; }
@@ -346,7 +348,7 @@ table, th, td {
 }
 
 table tr:nth-child(2n){
-    background-color: #ffffff08;
+    background-color: var(--even-tr-bg);
 }
 
 .screenshots {
