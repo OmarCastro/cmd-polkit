@@ -59,27 +59,38 @@ const readFileImport = (file) => existsSync(`${docsOutputPath}/${file}`) ? fs.re
 
 const promises = []
 
+/**
+ * @param {Element} element
+ * @returns {string} code classes
+ */
+const exampleCodeClass = (element) => {
+  const {classList} = element
+  const lineNoClass = classList.contains("line-numbers") ? " line-numbers" : ''
+  const wrapClass = classList.contains("wrap") ? " wrap" : ''
+  return "keep-markup" + lineNoClass + wrapClass
+}
+
 queryAll('script.html-example').forEach(element => {
   const pre = document.createElement('pre')
-  pre.innerHTML = exampleCode`<code class="language-markup keep-markup">${dedent(element.innerHTML)}</code>`
+  pre.innerHTML = exampleCode`<code class="language-markup ${exampleCodeClass(element)}">${dedent(element.innerHTML)}</code>`
   element.replaceWith(pre)
 })
 
 queryAll('script.css-example').forEach(element => {
   const pre = document.createElement('pre')
-  pre.innerHTML = exampleCode`<code class="language-css keep-markup">${dedent(element.innerHTML)}</code>`
+  pre.innerHTML = exampleCode`<code class="language-css ${exampleCodeClass(element)}">${dedent(element.innerHTML)}</code>`
   element.replaceWith(pre)
 })
 
 queryAll('script.json-example').forEach(element => {
   const pre = document.createElement('pre')
-  pre.innerHTML = exampleCode`<code class="language-json keep-markup">${dedent(element.innerHTML)}</code>`
+  pre.innerHTML = exampleCode`<code class="language-json ${exampleCodeClass(element)}">${dedent(element.innerHTML)}</code>`
   element.replaceWith(pre)
 })
 
 queryAll('script.js-example').forEach(element => {
   const pre = document.createElement('pre')
-  pre.innerHTML = exampleCode`<code class="language-js keep-markup">${dedent(element.innerHTML)}</code>`
+  pre.innerHTML = exampleCode`<code class="language-js ${exampleCodeClass(element)}">${dedent(element.innerHTML)}</code>`
   element.replaceWith(pre)
 })
 
@@ -106,9 +117,7 @@ queryAll('[ss:markdown][ss:include]').forEach(element => {
   element.removeAttribute('ss:include')
 })
 
-queryAll('code').forEach(element => {
-  Prism.highlightElement(element, false)
-})
+queryAll('code').forEach(highlightElement)
 
 queryAll('[ss:aria-label]').forEach(element => {
   element.removeAttribute('ss:aria-label')
@@ -377,4 +386,16 @@ function minifyDOM (domElement) {
   const initialMinificationState = updateMinificationStateForElement(domElement, defaultMinificationState)
   walkElementMinification(domElement, initialMinificationState)
   return domElement
+}
+
+/**
+ * Applies syntax highligth on elements
+ * @param {Element} domElement - target DOM tree root element
+ * @returns {Element} root element of the minified DOM
+ */
+function highlightElement(domElement){
+  Prism.highlightElement(domElement, false)
+  domElement.innerHTML = domElement.innerHTML.split('\n')
+  .map(line => `<span class="line">${line}</span>`)
+  .join('\n')
 }

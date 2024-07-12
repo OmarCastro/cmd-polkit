@@ -74,7 +74,45 @@
    border-radius: 0.3em;
    white-space: normal;
  }
+
+ pre:has(code.line-numbers[class*="language-"]){
+  padding-left: 3em;
+  counter-reset: line;
+  position: relative;
+
+  &::before {
+    position: absolute;
+    inset: 0 auto 0 3em;
+    width: 1px;
+    background: var(--code-color);
+    opacity: 50%;
+    content: " ";
+  }
+
+ }
+
+ pre code.line-numbers .line{
+  counter-increment: line;
+  position: relative;
+  padding-left: 0.5em;
+  display: inline-block;
+
+  &::before {
+    content: counter(line);
+    position: absolute;
+    display: inline-block;
+    right: 100%;
+    width: 3em;
+    padding: 0 .5em;
+    text-align: right;
+    opacity: 50%;
+  }
+ }
  
+ code.wrap {
+  text-wrap: wrap;
+ }
+
  .token.comment,
  .token.prolog,
  .token.doctype,
@@ -143,25 +181,3 @@
  .token.entity {
    cursor: help;
  }
- 
- 
- /*
-  Plugin support
-  */
- 
- /* Line highlight */
- .line-highlight {
-   background: rgba(255, 217, 0, 0.10);
-   border-top: 1px solid rgba(255, 217, 0, 0.55);
-   border-bottom: 1px solid rgba(255, 217, 0, 0.55);
- }
- 
- /* Line numbers */
- .line-numbers .line-numbers-rows {
-   border-right: 1px solid #F8F8F2;
- }
- 
- .line-numbers-rows > span:before {
-   color: #D4D0AB;
- }
- 
