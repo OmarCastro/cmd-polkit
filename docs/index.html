@@ -63,19 +63,6 @@
                     <figcaption>Fig.2 - custom authentication using cmd-polkit with zenity</figcaption>
                 </figure>
             </div>
-
-            <dialog id="fig1-popover" class="img-zoom" popover>
-                <button class="zoom-close" popovertarget="fig1-popover" popovertargetaction="hide">
-                    <img class=zoom-img src="./images/screenshot-rofi.webp" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
-                </button>
-            </dialog>
-
-            <dialog id="fig2-popover" class="img-zoom" popover>
-                <button class="zoom-close" popovertarget="fig2-popover" popovertargetaction="hide">
-                    <img class=zoom-img src="./images/screenshot-zenity.webp" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
-                </button>
-            </dialog>
-            
         </section>
 
 
@@ -176,9 +163,9 @@
                 - `icon name` is the icon representing the project or vendor that is supplying the actions.
 
             To give an example when executing `pkexec echo 1` in a terminal with cmd-polkit active,
-            the message it is send to command is similar to the following code
+            the message it is send to command is similar to the following code:
 
-            <script type="text/plain" class="js-example">
+            <script type="text/plain" class="js-example line-numbers wrap">
                 {"action":"request password","prompt":"Password: ","message":"Authentication is needed to run `/usr/bin/echo 1' as the super user","action description":{"id":"org.freedesktop.policykit.exec","description":"Run a program as another user","message":"Authentication is required to run a program as another user","vendor name":"The polkit project","vendor url":"http://www.freedesktop.org/wiki/Software/polkit/","icon name":""}}
             </script>
 
@@ -214,5 +201,17 @@
             <sup id="cite-2">2</sup> https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>
         </section>
     </div>
+
+    <dialog id="fig1-popover" class="img-zoom" popover>
+        <button class="zoom-close" popovertarget="fig1-popover" popovertargetaction="hide">
+            <img class=zoom-img src="./images/screenshot-rofi.webp" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
+        </button>
+    </dialog>
+
+    <dialog id="fig2-popover" class="img-zoom" popover>
+        <button class="zoom-close" popovertarget="fig2-popover" popovertargetaction="hide">
+            <img class=zoom-img src="./images/screenshot-zenity.webp" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
+        </button>
+    </dialog>
     </body>
 </html>
