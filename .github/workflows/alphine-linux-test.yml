@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Build and test for Alphine Linux aarch64
 
 on:
   # Runs on pushes targeting the default branch
@@ -18,15 +18,13 @@ permissions:
 # Allow only one concurrent deployment, skipping runs queued between the run in-progress and latest queued.
 # However, do NOT cancel in-progress runs as we want to allow these production deployments to complete.
 concurrency:
-  group: "pages"
+  group: "alphine-musl"
   cancel-in-progress: false
 
 jobs:
   # Single deploy job since we're just deploying
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+  build-and-test:
+    alphine-musl:
       runs-on: ubuntu-latest
       strategy:
         matrix:
