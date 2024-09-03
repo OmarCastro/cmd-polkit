@@ -39,6 +39,7 @@ jobs:
           arch: ${{ matrix.os-arch }}
           branch: edge
           packages: >
+            dbus
             gcc
             meson
             musl
@@ -57,7 +58,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup build-test
-        run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
+        run: |
+          rc-service dbus start
+          ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
         shell: alpine.sh {0}
         continue-on-error: true
       - name: Upload artifact
