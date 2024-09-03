@@ -38,7 +38,13 @@ jobs:
         with:
           arch: ${{ matrix.os-arch }}
           branch: edge
-          packages: meson gcovr json-glib polkit gtk3 valgrind
+          packages: >
+            meson
+            gcovr
+            json-glib
+            polkit
+            gtk3
+            valgrind
           shell-name: alpine.sh
       - name: Checkout
         uses: actions/checkout@v4
