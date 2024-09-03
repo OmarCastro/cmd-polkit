@@ -22,8 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Single deploy job since we're just deploying
-  build-and-test:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -33,8 +32,6 @@ jobs:
     env:
       CROSS_SYSROOT: /mnt/alpine-${{ matrix.os-arch }}
     steps:
-      - uses: actions/checkout@v1
-
       - name: Set up Alpine Linux for ${{ matrix.os-arch }} (target arch)
         id: alpine-target
         uses: jirutka/setup-alpine@v1
@@ -43,13 +40,15 @@ jobs:
           branch: edge
           packages: meson gcovr json-glib polkit gtk3 valgrind
           shell-name: alpine.sh
-    - name: Setup build-test
-      run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
-      shell: alpine-target.sh {0}
-    - name: Upload artifact
-      uses: actions/upload-pages-artifact@v3
-      with:
-        path: 'build-alphine-musl'
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup build-test
+        run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
+        shell: alpine-target.sh {0}
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'build-alphine-musl'
 
 
 
