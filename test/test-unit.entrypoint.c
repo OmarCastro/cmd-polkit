@@ -260,18 +260,32 @@ static void test_log_polkit_auth_identities ([[maybe_unused]] Fixture *fixture, 
 	log__verbose();
 	PolkitIdentity * user = polkit_unix_user_new(0);
 	PolkitIdentity * group = polkit_unix_group_new(0);
-	PolkitIdentity *  netgroup = polkit_unix_netgroup_new("testgroup");
 	GList *list = NULL;
 	list = g_list_append(list, user);
 	list = g_list_append(list, group);
+
+// not all environment supports netgroups so we add a compilation condition here
+#ifdef HAVE_SETNETGRENT
+	PolkitIdentity *  netgroup = polkit_unix_netgroup_new("testgroup");
 	list = g_list_append(list, netgroup);
-	log__verbose__polkit_auth_identities(list);
-	g_assert_cmpstr(get_stdout()->str, ==, "\
+	const char *expected_result ="\
 Vrbos:test_log_polkit_auth_identities:Polkit identities\n\
 Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
 Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
 Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"other\",\"value\":\"unix-netgroup:testgroup\"}\n\
-");
+";
+#else
+	const char *expected_result ="\
+Vrbos:test_log_polkit_auth_identities:Polkit identities\n\
+Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"user\",\"name\":\"root\",\"id\":0,\"group id\":0}\n\
+Vrbos:test_log_polkit_auth_identities:└─ {\"type\":\"group\",\"name\":\"root\",\"id\":0}\n\
+";
+#endif
+
+log__verbose__polkit_auth_identities(list);
+
+
+	g_assert_cmpstr(get_stdout()->str, ==, expected_result);
 	g_list_free_full(list, g_object_unref);
 }
 
