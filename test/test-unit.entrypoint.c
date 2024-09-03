@@ -73,7 +73,37 @@ authenticate on polkit.\n\
 Full documentation <https://omarcastro.github.io/cmd-polkit>\n\
 "
 
+void write_to_file(const char *name, const char *content){
+	FILE *file;
+	file = fopen(name, "w");
+	if (file == NULL)
+	{
+		printf("error\n");
+	} else {
+		fprintf(file, "%s", content);
+	}
+	fclose(file);
+}
+
+
+void append_found_polkit_action_description(GList* actions){
+	const char* build_dir = getenv("G_TEST_BUILDDIR");
+	if(build_dir == NULL){ return; }
+	gchar* file = g_strconcat(build_dir, "/polkit-action-ids.txt", NULL);
+	GString *string = g_string_sized_new(1024);
+	for(GList *elem = actions; elem; elem = elem->next) {
+    PolkitActionDescription* action_description = elem->data;
+		const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
+		g_string_append_printf(string, "%s\n", action_description_action_id);
+	}	
+	write_to_file(file, string->str);
+
+	g_free(file);
+
+}
+
 PolkitActionDescription * get_test_polkit_action_description(){
+	static bool actions_written = false;
 	gchar * action_id = "org.freedesktop.login1.halt";
 	PolkitActionDescription * result = NULL;
 	GError *error = NULL;
@@ -81,6 +111,10 @@ PolkitActionDescription * get_test_polkit_action_description(){
     if(error == NULL){
         GList* actions = polkit_authority_enumerate_actions_sync (authority,NULL,&error);
         if(error == NULL){
+			if(!actions_written){
+				append_found_polkit_action_description(actions);
+				actions_written = true;
+			}
             for(GList *elem = actions; elem; elem = elem->next) {
                 PolkitActionDescription* action_description = elem->data;
                 const gchar * action_description_action_id = polkit_action_description_get_action_id(action_description);
