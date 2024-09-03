@@ -39,9 +39,8 @@ jobs:
           arch: ${{ matrix.os-arch }}
           branch: edge
           packages: >
-            gcc
             meson
-            musl
+            musl-dev
             gcovr
             json-glib
             polkit
@@ -55,8 +54,9 @@ jobs:
         shell: alpine.sh {0}
         continue-on-error: true
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
+          name: build-alphine-musl
           path: 'build-alphine-musl'
 
 
