@@ -43,7 +43,7 @@ jobs:
             gcovr
             json-glib
             polkit
-            gtk3
+            gtk+3.0
             valgrind
           shell-name: alpine.sh
       - name: Checkout
