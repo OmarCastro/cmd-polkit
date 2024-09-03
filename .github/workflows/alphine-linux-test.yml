@@ -41,8 +41,10 @@ jobs:
           packages: >
             gcc
             meson
+            musl
             musl-dev
             gcovr
+            glib
             json-glib
             polkit
             gtk+3.0
