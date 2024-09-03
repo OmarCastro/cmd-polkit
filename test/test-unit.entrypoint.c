@@ -125,7 +125,12 @@ PolkitActionDescription * get_test_polkit_action_description(){
                 g_object_unref(action_description);
             }
             g_list_free(actions);
-        }
+        } else {
+			// Report error to user, and free error
+			g_assert (authority == NULL);
+			fprintf (stderr, "Unable to enumerate polkit actions: %s\n", error->message);
+			g_error_free (error);
+		}
         g_object_unref(authority);
     } else {
 		// Report error to user, and free error
