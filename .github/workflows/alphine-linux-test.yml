@@ -50,7 +50,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup build-test
         run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
-        shell: alpine-target.sh {0}
+        shell: alpine.sh {0}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
