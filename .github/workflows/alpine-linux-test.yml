@@ -39,6 +39,7 @@ jobs:
           arch: ${{ matrix.os-arch }}
           branch: edge
           packages: >
+            openrc
             dbus
             gcc
             meson
