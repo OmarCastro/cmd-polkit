@@ -59,9 +59,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup build-test
-        run: |
-          rc-service dbus start
-          ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
+        run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
         shell: alpine.sh {0}
         continue-on-error: true
       - name: Upload artifact
