@@ -39,6 +39,7 @@ jobs:
           arch: ${{ matrix.os-arch }}
           branch: edge
           packages: >
+            gcc
             meson
             musl
             gcovr
@@ -50,7 +51,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Setup build-test
-        run: CC=musl-gcc ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
+        run: ${{ github.workspace }}/dev-tools/github-action-build-alphine-musl.sh
         shell: alpine.sh {0}
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
