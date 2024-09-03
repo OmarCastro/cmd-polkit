@@ -45,9 +45,13 @@ jobs:
             musl-dev
             gcovr
             glib
+            glib-dev
             json-glib
+            json-glib-dev
             polkit
+            polkit-dev
             gtk+3.0
+            gtk+3.0-dev
             valgrind
           shell-name: alpine.sh
       - name: Checkout
