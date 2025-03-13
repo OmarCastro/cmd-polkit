@@ -3,13 +3,13 @@
 #
 # Requirements: jq, notify-send
 #
-# If you use dmenu, consider applying this patch and setting MENU='dmenu -P'
+# If you use dmenu, apply this patch:
 #     https://tools.suckless.org/dmenu/patches/password/
 #
 
 # Set dmenu program and its options.
-# You can use wmenu -P for Wayland.
-MENU='dmenu'
+# For example, on Wayland you can use "wmenu -P".
+MENU='dmenu -P'
 
 notify() {
 	[ -z "$MESSAGE" ] && return 1
