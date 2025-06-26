@@ -18,4 +18,8 @@ const gchar * request_message_request_password(
     PolkitActionDescription* action_description
 );
 
+const gchar * request_message_show_info(const gchar * text);
+
+const gchar * request_message_show_error(const gchar * text);
+
 #endif //EXTENSION__H__REQUEST_MESSAGES

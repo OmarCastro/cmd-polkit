@@ -251,15 +251,18 @@ static void on_session_request([[maybe_unused]] PolkitAgentSession* session, gch
     auth_dialog_data_write_to_channel(d, write_message);
 }
 
-static void on_session_show_error([[maybe_unused]] PolkitAgentSession* session, gchar *text, [[maybe_unused]] AuthDlgData* d)
+static void on_session_show_error([[maybe_unused]] PolkitAgentSession* session, gchar *text, AuthDlgData* d)
 {
-
     log__verbose__polkit_session_show_error(text);
+    g_autofree const char* message = request_message_show_error(text);
+    auth_dialog_data_write_to_channel(d, message);
 }
 
-static void on_session_show_info([[maybe_unused]] PolkitAgentSession *session, gchar *text, [[maybe_unused]] AuthDlgData* d)
+static void on_session_show_info([[maybe_unused]] PolkitAgentSession *session, gchar *text, AuthDlgData* d)
 {
     log__verbose__polkit_session_show_info(text);
+    g_autofree const char* message = request_message_show_info(text);
+    auth_dialog_data_write_to_channel(d, message);
 }
 
 static void build_session(AuthDlgData *d){
