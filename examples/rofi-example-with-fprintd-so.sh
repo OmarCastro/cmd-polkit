@@ -5,8 +5,8 @@
 Setup
 ======
 
-This example expects you to have fprint setup, make sure you follow the instructions for your distro,
-but generally you should have it setup with "fprintd-enroll" command executed, pointed to a finger choosen
+This example expects you to have fprint setup. Make sure you follow the instructions for your distro.
+Generally you should have it setup with "fprintd-enroll" command, pointed to a finger choosen
 as an argument of the executable
 
 I leave are some links for some distros I found while learning how to configure it on my machine
@@ -27,8 +27,8 @@ Depending on each distro you can configure in 1 or 2 ways:
   do not allow blank password input, such as Gnome's built-in polkit agent.
 
 
-This example was made for "pam_fprintd.so" config, so you can adding the following 2 lines at the top of /etc/pam.d/polkit-1
-may be enough. 
+This example was made for "pam_fprintd.so" config, so you can apply the configuration by adding the following 2 lines
+at the top of /etc/pam.d/polkit-1:
 
 """
 auth		sufficient  	pam_unix.so try_first_pass likeauth nullok
@@ -36,8 +36,10 @@ auth		sufficient  	pam_fprintd.so
 ...
 """
 
-Once again, if it fails, check the instructions on how to configure for your distro.
+If /etc/pam.d/polkit-1 does not exist, you copy from /usr/lib/pam.d/polkit-1 first before adding the previous 2 lines.
 
+Once again, if it fails or if there is any issue regarding polkit configuration, check the instructions on how to configure
+for your distro.
 
 
 How to use this example
