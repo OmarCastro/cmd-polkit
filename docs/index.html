@@ -194,11 +194,73 @@
             to finish it, otherwise, another _authentication message request_ is sent to command.
         </section>
 
+        <section class="section section--fingerprint" ss:markdown>
+            ## Fingerprint authentication 🫆
+
+            It is possible to use fingerprint for authentication by taking advantage of polkit support for <cite>Pluggable Authentication Modules (PAM)<sup><a href="#cite-3">[3]</a></sup></cite>
+            and <cite>fprint<sup><a href="#cite-4">[4]</a></sup></cite>.
+
+            ### Fprint setup
+
+            First, **you will need a fprint supported fingerprint scanner**, this is important. There is a limited number of devices that is supported by fprint,
+            recent scanners are most likely not supported. fprint has a list of supported devices on https://fprint.freedesktop.org/supported-devices.html.
+
+            Then you will need to configure fprint by following the instructions regarding the distro you are using.
+
+            Generally you should have it setup with "fprintd-enroll" command, pointed to a finger choosen as an argument of the executable.
+
+            I leave are some links for some distros I found while learning how to configure it on my machine
+
+            - Linux Mint, last seen on 2025-06-26: https://forums.linuxmint.com/viewtopic.php?t=408129
+            - Arch Linux, last seen on 2025-06-26: https://wiki.archlinux.org/title/Fprint
+
+            ### PAM setup
+
+            After setup with fprint you will need to setup PAM on polkit. 
+            The polkit PAM configuration is in `/etc/pam.d/polkit-1` file
+
+            If `/etc/pam.d/polkit-1` does not exist, you copy from `/usr/lib/pam.d/polkit-1` first before configuring it (the path may vary depending on the distro).
+
+            Depending on each distro you can configure in 2 ways: by using `pam_fprintd.so` or `pam_fprintd_grosshack.so`:
+
+
+            #### pam_fprintd.so
+
+            By configuring with `pam_fprintd.so` polkit will prompt for a password first; if you respond with and empty password, 
+            polkit will then proceed to use fingerprint authentication.
+
+            To configure with pam_fprintd.so, add following 2 lines at the top of `/etc/pam.d/polkit-1`:
+
+            ```
+            auth		sufficient  	pam_unix.so try_first_pass likeauth nullok
+            auth		sufficient  	pam_fprintd.so
+            ...
+            ```
+
+            #### pam_fprintd_grosshack.so
+
+            By configuring with `pam_fprintd.so` polkit will prompt for a password first and fingerprint at the same time.
+            This is sometimes needed for graphical programs which do not allow blank password input, such as Gnome's built-in polkit agent.
+            pam_fprintd_grosshack.so is normally in a separate package, so you may need to install it.
+
+            To configure with pam_fprintd_grosshack.so, ensure it is installed and add following 2 lines at the top of `/etc/pam.d/polkit-1`:
+
+            ```
+            auth            sufficient      pam_fprintd_grosshack.so
+            auth            sufficient      pam_unix.so try_first_pass nullok
+            ...
+            ```
+
+            
+        </section>
+
         <section class="section section--references" ss:markdown>
             ## References
 
             <sup id="cite-1">1</sup> https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>
             <sup id="cite-2">2</sup> https://www.freedesktop.org/software/polkit/docs/latest/polkit.8.html, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>
+            <sup id="cite-3">3</sup> https://web.archive.org/web/20210506140423/http://www.linux-pam.org/Linux-PAM-html/sag-introduction.html, last seen on <time datetime="2025-06-28T21:30:10Z">2025-06-28</time>.</p>
+            <sup id="cite-4">4</sup> https://fprint.freedesktop.org, last seen on <time datetime="2025-06-28T21:33:24Z">2025-06-28</time>.</p>
         </section>
     </div>
 
