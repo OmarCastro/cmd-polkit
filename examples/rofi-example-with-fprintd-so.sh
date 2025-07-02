@@ -61,4 +61,4 @@ Omar Castro
 ////
 
 cd "$(dirname "${BASH_SOURCE[0]}")"
-../build/cmd-polkit-agent -sv -c "python scripts/rofi-example-with-fprintd-so.py"
+../build/cmd-polkit-agent -s -c "python scripts/rofi-example-with-fprintd-so.py"
