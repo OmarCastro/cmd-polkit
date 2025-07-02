@@ -226,7 +226,7 @@
 
             #### pam_fprintd.so
 
-            By configuring with `pam_fprintd.so` polkit will prompt for a password first; if you respond with and empty password, 
+            By configuring with `pam_fprintd.so`, polkit will prompt for a password first; if you respond with and empty password, 
             polkit will then proceed to use fingerprint authentication.
 
             To configure with pam_fprintd.so, add following 2 lines at the top of `/etc/pam.d/polkit-1`:
@@ -239,7 +239,7 @@
 
             #### pam_fprintd_grosshack.so
 
-            By configuring with `pam_fprintd.so` polkit will prompt for a password first and fingerprint at the same time.
+            By configuring with `pam_fprintd_grosshack.so`, polkit will prompt for a password first and fingerprint at the same time.
             This is sometimes needed for graphical programs which do not allow blank password input, such as Gnome's built-in polkit agent.
             pam_fprintd_grosshack.so is normally in a separate package, so you may need to install it.
 
