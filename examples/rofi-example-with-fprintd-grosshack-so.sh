@@ -2,6 +2,8 @@
 
 << ////
 
+This example expects you to have fprint setup. Make sure you follow the instructions for your distro.
+
 Setup
 ======
 

@@ -2,10 +2,11 @@
 
 << ////
 
+This example expects you to have fprint setup. Make sure you follow the instructions for your distro.
+
 Setup
 ======
 
-This example expects you to have fprint setup. Make sure you follow the instructions for your distro.
 Generally you should have it setup with "fprintd-enroll" command, pointed to a finger choosen
 as an argument of the executable
 
