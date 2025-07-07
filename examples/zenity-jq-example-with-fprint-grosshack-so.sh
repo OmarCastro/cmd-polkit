@@ -148,7 +148,6 @@ else
             reopen_dialog
         elif echo "$msg" | jq -e '.action == "authorization response"' 1>/dev/null 2>/dev/null; then
             close_dialog
-            exit 0
         fi
     done
 fi
