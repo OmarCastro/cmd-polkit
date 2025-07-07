@@ -153,6 +153,12 @@ static void test_all_request_messages_are_single_line ([[maybe_unused]] Fixture 
 
 	g_autofree const gchar* request_pass_message = request_message_request_password("\n", "\n", NULL);
 	g_assert_true(has_no_newlines(request_pass_message));
+
+	g_autofree const gchar* request_error_message = request_message_show_error("\n");
+	g_assert_true(has_no_newlines(request_error_message));
+
+	g_autofree const gchar* request_info_message = request_message_show_info("\n");
+	g_assert_true(has_no_newlines(request_info_message));
 }
 
 static void test_request_message_request_password_is_escaped_correctly ([[maybe_unused]] Fixture *fixture, [[maybe_unused]] gconstpointer user_data) {
