@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Add "show info" and "show error" messages to command
+- Add instructions on how to use fingerprint reader on cmd-polkit
+- Add examples with fingerprint authentication
+
 ## [0.3.0] - 2024-07-05
 
 ### Added
