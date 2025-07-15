@@ -21,7 +21,7 @@ The polkit PAM configuration is in "/etc/pam.d/polkit-1" file
 Depending on each distro you can configure in 1 or 2 ways:
 
 1. With "pam_fprintd.so": 
-  Prompts for a password first; if you press Enter on empty password, it will proceed to fingerprint authentication. 
+  Prompts for a password first; if password fails, it will proceed to fingerprint authentication. 
 
 2. With "pam_fprintd_grosshack.so": 
   Prompts for a password and fingerprint at the same time, This may be needed for some graphical programs which

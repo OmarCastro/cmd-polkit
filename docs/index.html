@@ -226,7 +226,7 @@
 
             #### pam_fprintd.so
 
-            By configuring with `pam_fprintd.so`, polkit will prompt for a password first; if you respond with and empty password, 
+            By configuring with `pam_fprintd.so`, polkit will prompt for a password first; if password authentication fails, 
             polkit will then proceed to use fingerprint authentication.
 
             To configure with pam_fprintd.so, add following 2 lines at the top of `/etc/pam.d/polkit-1`:
