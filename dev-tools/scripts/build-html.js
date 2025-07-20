@@ -1,7 +1,7 @@
 /* eslint-disable camelcase, max-lines-per-function, jsdoc/require-jsdoc, jsdoc/require-param-description */
 import Prism from 'prismjs'
 import { minimatch } from 'minimatch'
-import { imageSize } from 'image-size'
+import { imageSizeFromFile } from 'image-size/fromFile'
 import { JSDOM } from 'jsdom'
 import { marked } from 'marked'
 import { existsSync } from 'node:fs'
@@ -126,7 +126,7 @@ queryAll('[ss:aria-label]').forEach(element => {
   }
 })
 
-queryAll('img[ss:size]').forEach(element => {
+promises.push(...queryAll('img[ss:size]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const getdefinedLength = (attr) => {
     if(!element.hasAttribute(attr)){ return undefined }
@@ -139,7 +139,7 @@ queryAll('img[ss:size]').forEach(element => {
   if(definedWidth && definedHeight){
     return
   }
-  const size = imageSize(`${docsOutputPath}/${imageSrc}`)
+  const size = await imageSizeFromFile(`${docsOutputPath}/${imageSrc}`)
   element.removeAttribute('ss:size')
   const {width, height} = size
   if(definedWidth){
@@ -154,7 +154,7 @@ queryAll('img[ss:size]').forEach(element => {
   } 
   element.setAttribute('width', `${size.width}`)
   element.setAttribute('height', `${size.height}`)
-})
+}))
 
 promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
