@@ -48,7 +48,7 @@ How to use this example
 
 1. run this executable
 2. run any command that requires polkit autentication (e.g. "pkexec echo 123")
-3. When zenity dialog opens press Enter wihout writing the password
+3. When zenity dialog opens press Enter wihout writing the password; or input a wrong password
 4. Should appear a message to put a specific finger on the fingerprint scanner, put the indicated finger on the scanner
 4a. If it fails, a new line showing the error should appear, and the a new info line should appear to put a finger to
     the fingerprint again, put the indicated finger on the fingerprint scanner
