@@ -6,7 +6,7 @@
         <meta name="keywords" content="polkit policy-kit security documentation">
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="doc.css" ss:inline>
+        <link rel="stylesheet" href="doc.css" p-inline>
     </head>
     <body>
         <div class="sidebar">
@@ -14,7 +14,7 @@
         <div class="toc">
             <div class="toc">
                 <p><strong>Documentation</strong></p>
-                <template ss:toc></template>
+                <template p-toc></template>
                 <p><strong><a href="contributing">How to contribute</a></strong></p>
             </div>
         </div>
@@ -26,25 +26,25 @@
         </h1>
 
         <section class="section section--badge">
-            <a href="https://github.com/OmarCastro/cmd-polkit/blob/master/LICENSE" title="View license on repository" ss:aria-label>
-                <img src="reports/license-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/cmd-polkit/blob/master/LICENSE" title="View license on repository" p-aria-label>
+                <img src="reports/license-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="reports/testlog.txt" title="Show test results" ss:aria-label>
-                <img src="reports/test-results-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="reports/testlog.txt" title="Show test results" p-aria-label>
+                <img src="reports/test-results-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="reports/coveragereport" title="Show test code coverage information" ss:aria-label>
-                <img src="reports/coverage-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="reports/coveragereport" title="Show test code coverage information" p-aria-label>
+                <img src="reports/coverage-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="https://github.com/OmarCastro/cmd-polkit" title="View code repository" ss:aria-label>
-                <img src="reports/repo-badge-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/cmd-polkit" title="View code repository" p-aria-label>
+                <img src="reports/repo-badge-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
-            <a href="https://github.com/OmarCastro/cmd-polkit/releases/latest" title="View release notes" ss:aria-label>
-                <img src="reports/repo-release-a11y.svg" ss:size ss:badge-attrs="-title"></img>
+            <a href="https://github.com/OmarCastro/cmd-polkit/releases/latest" title="View release notes" p-aria-label>
+                <img src="reports/repo-release-a11y.svg" p-size p-badge-attrs="-title"></img>
             </a>
 
         </section>
 
-        <section class="section section--introduction" ss:markdown>
+        <section class="section section--introduction" p-markdown>
             ## Introducion
 
             `cmd-polkit` is a tool that allows to easily customize the UI used to authenticate on polkit.
@@ -52,13 +52,13 @@
             <div class="screenshots">
                 <figure>
                     <button class="img-button" popovertarget="fig1-popover">
-                        <img width="500" ss:size src="./images/screenshot-rofi.webp" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
+                        <img width="500" p-size src="./images/screenshot-rofi.webp" alt="screenshot custom authentication using cmd-polkit with rofi"></img>
                     </button>
                     <figcaption>Fig.1 - custom authentication using cmd-polkit with rofi</figcaption>
                 </figure>
                 <figure>
                     <button class="img-button" popovertarget="fig2-popover">
-                        <img width="500" ss:size src="./images/screenshot-zenity.webp" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
+                        <img width="500" p-size src="./images/screenshot-zenity.webp" alt="screenshot custom authentication using cmd-polkit with zenity"></img>
                     </button>
                     <figcaption>Fig.2 - custom authentication using cmd-polkit with zenity</figcaption>
                 </figure>
@@ -66,7 +66,7 @@
         </section>
 
 
-        <section class="section section--introduction" ss:markdown>
+        <section class="section section--introduction" p-markdown>
             ## How it works
 
             It works by calling the defined command and communicate via stdin and stdout, 
@@ -78,13 +78,13 @@
             or <code>-c</code> argument.
 
             <figure style="text-align: center;">
-                <img width="600" ss:size src="./seq-diagram-1.svg" alt="sequence diagram of a single authentication process"></img>
+                <img width="600" p-size src="./seq-diagram-1.svg" alt="sequence diagram of a single authentication process"></img>
                 <figcaption>Fig.3 - authentication process</figcaption>
             </figure>
 
         </section>
 
-        <section class="section section--modes" ss:markdown>
+        <section class="section section--modes" p-markdown>
             ## Authentication handling mode
 
             To run <code>cmd-polkit</code>, it is required to explicitly select the authentication handling
@@ -100,7 +100,7 @@
             the command will only run after finishing the first authentication process.
 
             <figure style="text-align: center;">
-                <img width="800" ss:size src="./seq-diagram-serial.svg" alt="sequence diagram of mutliple authentication processes in serial mode"></img>
+                <img width="800" p-size src="./seq-diagram-serial.svg" alt="sequence diagram of mutliple authentication processes in serial mode"></img>
                 <figcaption>Fig.4 - authentication process in serial mode</figcaption>
             </figure>
 
@@ -116,7 +116,7 @@
             using serial mode. Each command can handle the process independently.
 
             <figure style="text-align: center;">
-                <img width="800" ss:size src="./seq-diagram-parallel.svg" alt="sequence diagram of mutliple authentication processes in parallel mode"></img>
+                <img width="800" p-size src="./seq-diagram-parallel.svg" alt="sequence diagram of mutliple authentication processes in parallel mode"></img>
                 <figcaption>Fig.5 - authentication process in parallel mode</figcaption>
             </figure>
 
@@ -128,7 +128,7 @@
 
         </section>
 
-        <section class="section section--messages" ss:markdown>
+        <section class="section section--messages" p-markdown>
 
             ## Message schemas
 
@@ -194,7 +194,7 @@
             to finish it, otherwise, another _authentication message request_ is sent to command.
         </section>
 
-        <section class="section section--fingerprint" ss:markdown>
+        <section class="section section--fingerprint" p-markdown>
             ## Fingerprint authentication 🫆
 
             It is possible to use fingerprint for authentication by taking advantage of polkit support for <cite>Pluggable Authentication Modules (PAM)<sup><a href="#cite-3">[3]</a></sup></cite>
@@ -262,7 +262,7 @@
             
         </section>
 
-        <section class="section section--references" ss:markdown>
+        <section class="section section--references" p-markdown>
             ## References
 
             <sup id="cite-1">1</sup> https://www.freedesktop.org/software/polkit/docs/latest/PolkitActionDescription.html#polkit-action-description-get-annotation, last seen on <time datetime="2024-06-16T16:26:06Z">2024-06-16</time>.</p>

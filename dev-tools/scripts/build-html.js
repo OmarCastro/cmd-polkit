@@ -94,39 +94,39 @@ queryAll('script.js-example').forEach(element => {
   element.replaceWith(pre)
 })
 
-queryAll('svg[ss:include]').forEach(element => {
-  const ssInclude = element.getAttribute('ss:include')
+queryAll('svg[p-include]').forEach(element => {
+  const ssInclude = element.getAttribute('p-include')
   const svgText = readFileImport(ssInclude)
   element.outerHTML = svgText
-  element.removeAttribute('ss:include')
+  element.removeAttribute('p-include')
 })
 
-queryAll('[ss:markdown]:not([ss:include])').forEach(element => {
+queryAll('[p-markdown]:not([p-include])').forEach(element => {
   const md = dedent(element.innerHTML)
     .replaceAll('\n&gt;', '\n>') // for blockquotes, innerHTML escapes ">" chars
   console.error(md)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
-  element.removeAttribute('ss:markdown')
+  element.removeAttribute('p-markdown')
 })
 
-queryAll('[ss:markdown][ss:include]').forEach(element => {
-  const ssInclude = element.getAttribute('ss:include')
+queryAll('[p-markdown][p-include]').forEach(element => {
+  const ssInclude = element.getAttribute('p-include')
   const md = readFileImport(ssInclude)
   element.innerHTML = marked(md, { mangle: false, headerIds: false })
-  element.removeAttribute('ss:markdown')
-  element.removeAttribute('ss:include')
+  element.removeAttribute('p-markdown')
+  element.removeAttribute('p-include')
 })
 
 queryAll('code').forEach(highlightElement)
 
-queryAll('[ss:aria-label]').forEach(element => {
-  element.removeAttribute('ss:aria-label')
+queryAll('[p-aria-label]').forEach(element => {
+  element.removeAttribute('p-aria-label')
   if(element.hasAttribute('title') && !element.hasAttribute('aria-label')){
     element.setAttribute("aria-label", element.getAttribute("title"))
   }
 })
 
-promises.push(...queryAll('img[ss:size]').map(async (element) => {
+promises.push(...queryAll('img[p-size]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const getdefinedLength = (attr) => {
     if(!element.hasAttribute(attr)){ return undefined }
@@ -140,7 +140,7 @@ promises.push(...queryAll('img[ss:size]').map(async (element) => {
     return
   }
   const size = await imageSizeFromFile(`${docsOutputPath}/${imageSrc}`)
-  element.removeAttribute('ss:size')
+  element.removeAttribute('p-size')
   const {width, height} = size
   if(definedWidth){
     element.setAttribute('width', `${definedWidth}`)
@@ -156,7 +156,7 @@ promises.push(...queryAll('img[ss:size]').map(async (element) => {
   element.setAttribute('height', `${size.height}`)
 }))
 
-promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
+promises.push(...queryAll('img[p-badge-attrs]').map(async (element) => {
   const imageSrc = element.getAttribute('src')
   const svgText = await readFile(`${docsOutputPath}/${imageSrc}`, 'utf8')
   const div = document.createElement('div')
@@ -164,29 +164,29 @@ promises.push(...queryAll('img[ss:badge-attrs]').map(async (element) => {
   const svg = div.querySelector('svg')
   if (!svg) { throw Error(`${docsOutputPath}/${imageSrc} is not a valid svg`) }
 
-  if(!element.hasAttribute('alt') && !element.matches('[ss:badge-attrs~=-alt]')){
+  if(!element.hasAttribute('alt') && !element.matches('[p-badge-attrs~=-alt]')){
     const alt = svg.getAttribute('aria-label')
     if (alt) { element.setAttribute('alt', alt) }
   }
 
-  if(!element.hasAttribute('title') && !element.matches('[ss:badge-attrs~=-title]')){
+  if(!element.hasAttribute('title') && !element.matches('[p-badge-attrs~=-title]')){
      const title = svg.querySelector('title')?.textContent
      if (title) { element.setAttribute('title', title) }  
   }
-  element.removeAttribute('ss:badge-attrs')
+  element.removeAttribute('p-badge-attrs')
 }))
 
 promises.push(...queryAll('style').map(async element => {
   element.innerHTML = await minifyCss(element.innerHTML)
 }))
 
-promises.push(...queryAll('link[href][rel="stylesheet"][ss:inline]').map(async element => {
+promises.push(...queryAll('link[href][rel="stylesheet"][p-inline]').map(async element => {
   const href = element.getAttribute('href')
   const cssText = readFileImport(href)
   element.outerHTML = `<style>${await minifyCss(cssText)}</style>`
 }))
 
-promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
+promises.push(...queryAll('link[href][p-repeat-glob]').map(async (element) => {
   const href = element.getAttribute('href')
   if (!href) { return }
   for await (const filename of getFiles(docsOutputPath)) {
@@ -196,7 +196,7 @@ promises.push(...queryAll('link[href][ss:repeat-glob]').map(async (element) => {
     for (const { name, value } of element.attributes) {
       link.setAttribute(name, value)
     }
-    link.removeAttribute('ss:repeat-glob')
+    link.removeAttribute('p-repeat-glob')
     link.setAttribute('href', filename)
     element.insertAdjacentElement('afterend', link)
   }
@@ -239,7 +239,7 @@ const tocUtils = {
 
 await Promise.all(promises)
 
-queryAll('[ss:toc]').forEach(element => {
+queryAll('[p-toc]').forEach(element => {
   const ol = document.createElement('ol')
   /** @type {[HTMLElement, HTMLElement][]} */
   const path = []
