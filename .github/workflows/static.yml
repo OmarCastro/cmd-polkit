@@ -37,7 +37,7 @@ jobs:
           version: 1.0
       - uses: actions/setup-node@v6
         with:
-          node-version: 21
+          node-version: "lts/*"
       - name: Setup build-test
         run: ${{ github.workspace }}/dev-tools/github-action-build-docs.sh
       - name: Setup Pages
